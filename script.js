@@ -119,6 +119,7 @@ document.getElementById("contactForm").onsubmit=e=>{
   if(v("enqGuests"))lines.push(`Guests: ${v("enqGuests")}`);
   if(when)lines.push(`Date/Time: ${when}`);
   if(v("enqMsg"))lines.push(`Message: ${v("enqMsg")}`);
+  notifyOwner({title:`New enquiry: ${v("enqType")}`,lines:lines.slice(2),tags:["calendar","bell"]});
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
   document.getElementById("formMsg").classList.remove("hidden");
 };

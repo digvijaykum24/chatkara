@@ -5,6 +5,22 @@ const WHATSAPP_NUMBER="918677044213";          // +91 86770 44213
 const RESTAURANT={lat:25.472739,lng:85.706135};
 const DELIVERY_RADIUS_KM=3;
 const MIN_DELIVERY_SUBTOTAL=300;                 // delivery only when subtotal is MORE THAN ₹300
+// Owner push alerts via the free ntfy app (https://ntfy.sh). Subscribe to this topic in the app.
+// The topic is visible in this public code, so anyone could read these alerts:
+// never put customer phone numbers, addresses or locations in them (those go only in the WhatsApp message).
+const NTFY_TOPIC="chatkara-orders-eaqyevbq5w8w36";
+
+// Sends an instant phone alert to the owner. Never blocks or breaks the order if it fails.
+function notifyOwner({title,lines,tags}){
+  const message=lines.filter(l=>!/^(Phone|Address|Location|Distance):/.test(l)).join("\n").replace(/\*/g,"")
+    +"\n\nFull details arrive in WhatsApp when the customer taps Send.";
+  try{
+    fetch("https://ntfy.sh/",{method:"POST",keepalive:true,
+      body:JSON.stringify({topic:NTFY_TOPIC,title,message,tags,priority:5,
+        actions:[{action:"view",label:"Open WhatsApp",url:"https://wa.me/"}]})
+    }).catch(()=>{});
+  }catch{}
+}
 
 const cart={};                                   // item name -> qty
 let customerLoc=null;                            // {lat,lng,km,source}
@@ -68,7 +84,7 @@ function validateOrder(){
   const problem=orderProblem();
   $("ruleMsg").textContent=problem;
   $("waOrderBtn").disabled=!!problem;
-  $("waOrderBtn").textContent=isDelivery?"🛵 Order Delivery on WhatsApp":"🏪 Order Pickup on WhatsApp";
+  $("waOrderBtn").textContent=isDelivery?"🛵 Send Delivery Order Request":"🏪 Send Pickup Order Request";
 }
 
 function setLocation(lat,lng,source){
@@ -121,8 +137,13 @@ $("orderForm").onsubmit=e=>{
   e.preventDefault();
   if(orderProblem())return validateOrder();
   const isDelivery=orderType()==="delivery";
+  // Order ID appears in both the WhatsApp message and the owner's alert, so the
+  // restaurant can tell a genuine website order from a direct WhatsApp message.
+  const now=new Date(), abc="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const orderId=`CK-${String(now.getDate()).padStart(2,"0")}${String(now.getMonth()+1).padStart(2,"0")}-${Array.from(crypto.getRandomValues(new Uint8Array(4)),b=>abc[b%abc.length]).join("")}`;
   const lines=[
-    `*New ${isDelivery?"DELIVERY":"PICKUP"} Order — Chatkara Family Restaurant*`,"",
+    `*${isDelivery?"DELIVERY":"PICKUP"} ORDER REQUEST — Chatkara Family Restaurant*`,
+    `Order ID: ${orderId} (placed on website)`,"",
     ...Object.entries(cart).map(([n,q])=>`• ${n} × ${q} = ₹${priceOf(n)*q}`),
     "",`*Subtotal: ₹${subtotal()}*`,"",
     `Name: ${$("custName").value.trim()}`,
@@ -135,7 +156,16 @@ $("orderForm").onsubmit=e=>{
   }
   const note=$("custNote").value.trim();
   if(note)lines.push(`Note: ${note}`);
+  lines.push("","Please confirm my order.");
+  notifyOwner({
+    title:`New ${isDelivery?"delivery":"pickup"} order ${orderId}: ₹${subtotal()}`,
+    lines:lines.slice(3,-2),
+    tags:[isDelivery?"motor_scooter":"shopping_bags","bell"]
+  });
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
+  const sent=$("orderSentMsg");
+  sent.textContent=`✅ Order request ${orderId} is ready in WhatsApp. Tap Send there. Our team will review it and confirm your order.`;
+  sent.classList.remove("hidden");
 };
 
 renderCart();

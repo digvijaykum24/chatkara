@@ -30,3 +30,25 @@ GPS location needs HTTPS on the live site (Hostinger SSL). To test locally, run 
 
 ## Updating the live site
 After editing `style.css`, `script.js` or `order.js`, increase the `?v=` number on their links at the top/bottom of `index.html` (e.g. `?v=6` -> `?v=7`) so visitors' browsers load the new version.
+
+## Order alerts on your phone (ntfy)
+Every time someone presses the order or enquiry button you get an instant push alert, even if they never tap Send in WhatsApp.
+1. Install the free **ntfy** app (Play Store / App Store).
+2. Tap **+**, enter the topic `chatkara-orders-eaqyevbq5w8w36` and subscribe.
+3. Allow notifications for the app.
+
+Alerts show the items, total and customer name only. The topic name is visible in the website code, so alerts never include phone numbers, addresses or locations; those arrive in the WhatsApp message. To change the topic, edit `NTFY_TOPIC` in `order.js` and re-subscribe in the app.
+
+## Website-only orders (WhatsApp Business greeting)
+Every website order has an Order ID (e.g. `CK-2509-KUA4`) that appears in both the WhatsApp message and the ntfy phone alert. Treat a WhatsApp order as genuine only if its Order ID also appeared in an ntfy alert. Direct WhatsApp messages without one are not confirmed orders.
+
+Greeting message (WhatsApp Business > Business tools > Greeting message):
+
+    👋 Welcome to Chatkara Family Restaurants!
+
+    For delivery orders, please place your order through our website:
+    <your website link>
+
+    Select your food → Add to Cart → Enter your address → Verify the 3 KM delivery area → Submit your order request.
+
+    Our team will review your request and confirm the order.

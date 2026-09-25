@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=12">
   <script>
     tailwind.config = {
       theme: { extend: { fontFamily: {
@@ -211,11 +211,13 @@
 
       <textarea id="custNote" rows="2" class="mt-3" placeholder="Special instructions (optional)"></textarea>
       <p id="ruleMsg" class="order-rule"></p>
-      <button id="waOrderBtn" type="submit" class="wa-btn w-full justify-center mt-3" disabled>Order on WhatsApp</button>
+      <button id="waOrderBtn" type="submit" class="wa-btn w-full justify-center mt-3" disabled>Send Order Request</button>
+      <p id="orderSentMsg" class="order-note ok hidden" role="status"></p>
+      <p class="order-note">Orders are confirmed by our team on WhatsApp. Orders sent directly on WhatsApp without the website are not accepted.</p>
     </form>
   </div>
 
-  <script src="order.js?v=9"></script>
-  <script src="script.js?v=9"></script>
+  <script src="order.js?v=12"></script>
+  <script src="script.js?v=12"></script>
 </body>
 </html>
