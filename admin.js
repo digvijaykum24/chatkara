@@ -183,7 +183,7 @@ $("productForm").onsubmit=async e=>{
 /* ================= Customers ================= */
 async function loadCustomers(){
   const {data,error}=await sb.from("profiles").select("*").eq("role","customer").order("created_at",{ascending:false});
-  if(error){$("customerRows").innerHTML=`<tr><td colspan="7">${esc(error.message)}</td></tr>`;return}
+  if(error){$("customerRows").innerHTML=`<tr><td colspan="8">${esc(error.message)}</td></tr>`;return}
   customers=data;renderCustomers();
 }
 function renderCustomers(){
@@ -194,10 +194,10 @@ function renderCustomers(){
   });
   $("customerRows").innerHTML=rows.length?rows.map(({c,count,spent})=>{
     const d=phoneDigits(c.phone);
-    return `<tr><td>${esc(c.full_name||"–")}</td><td>${esc(c.email)}</td><td>${esc(c.phone||"–")}</td><td>${new Date(c.created_at).toLocaleDateString("en-IN")}</td>
+    return `<tr><td>${esc(c.full_name||"–")}</td><td>${esc(c.email)}</td><td>${esc(c.phone||"–")}</td><td>${c.address?esc(c.address)+(c.address_lat!=null?' <span class="dim">✓</span>':""):"–"}</td><td>${new Date(c.created_at).toLocaleDateString("en-IN")}</td>
       <td class="num">${count}</td><td class="num">${rupees(spent)}</td>
       <td class="num">${d.length===10?`<a class="btn btn-ghost btn-sm" href="https://wa.me/91${d}" target="_blank" rel="noopener">💬</a>`:""}</td></tr>`;
-  }).join(""):`<tr><td colspan="7" class="loading">No customers yet.</td></tr>`;
+  }).join(""):`<tr><td colspan="8" class="loading">No customers yet.</td></tr>`;
 }
 $("customerSearch").oninput=renderCustomers;
 

@@ -47,6 +47,7 @@
         <form id="profileForm" class="card narrow">
           <div class="field"><label for="pfName">Full name</label><input id="pfName" maxlength="100" autocomplete="name"></div>
           <div class="field"><label for="pfPhone">Phone number</label><input id="pfPhone" type="tel" maxlength="20" autocomplete="tel"></div>
+          <div class="field"><label for="pfAddress">Saved delivery address</label><textarea id="pfAddress" rows="2" maxlength="500" placeholder="Saved automatically after your first delivery order"></textarea><small id="pfAddrNote" class="dim"></small></div>
           <div class="field"><label for="pfEmail">Email</label><input id="pfEmail" disabled></div>
           <button class="btn btn-primary" type="submit">Save profile</button>
           <p id="profileMsg" class="msg" role="status"></p>
@@ -67,7 +68,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="config.js?v=1"></script>
-  <script src="dash.js?v=1"></script>
+  <script src="dash.js?v=2"></script>
   <script src="account.js?v=1"></script>
 </body>
 </html>

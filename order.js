@@ -40,11 +40,37 @@ async function prefillFromAccount(){
   currentAccount=await getAccount().catch(()=>null);
   accountChecked=true;
   if(currentAccount){
+    const p=currentAccount.profile;
     const fill=(id,v)=>{const el=$(id);if(el&&v&&!el.value)el.value=v};
-    fill("custName",currentAccount.profile.full_name);fill("custPhone",currentAccount.profile.phone);
-    fill("enqName",currentAccount.profile.full_name);fill("enqPhone",currentAccount.profile.phone);
+    fill("custName",p.full_name);fill("custPhone",p.phone);
+    fill("enqName",p.full_name);fill("enqPhone",p.phone);
+    // Saved delivery address (already verified on a previous order): no need to verify again
+    if(p.address&&!addressEl.value.trim()){
+      addressEl.value=p.address;
+      if(p.address_lat!=null&&p.address_lng!=null){
+        setLocation(p.address_lat,p.address_lng,p.address_source||"gps");
+        locStatus.textContent="📍 Your saved address. "+locStatus.textContent;
+      }
+    }
   }
   validateOrder();
+}
+
+// After an order, remember the customer's details for next time (only what changed)
+function saveCustomerDetails(isDelivery){
+  if(!currentAccount||!sb)return;
+  const p=currentAccount.profile, upd={};
+  const name=$("custName").value.trim(), phone=$("custPhone").value.trim();
+  if(name&&name!==p.full_name)upd.full_name=name;
+  if(phone&&phone!==p.phone)upd.phone=phone;
+  if(isDelivery&&customerLoc){
+    const addr=addressEl.value.trim();
+    if(addr!==p.address||customerLoc.lat!==p.address_lat||customerLoc.lng!==p.address_lng)
+      Object.assign(upd,{address:addr,address_lat:customerLoc.lat,address_lng:customerLoc.lng,address_source:customerLoc.source});
+  }
+  if(!Object.keys(upd).length)return;
+  sb.from("profiles").update(upd).eq("id",currentAccount.user.id)
+    .then(({error})=>{if(error)console.warn("Could not save details",error.message);else Object.assign(p,upd)});
 }
 
 // Keep the cart while the customer logs in / signs up, then bring them back to finish the order
@@ -224,6 +250,7 @@ $("orderForm").onsubmit=e=>{
     location_source:isDelivery?customerLoc.source:null,
     note:note||null
   });
+  saveCustomerDetails(isDelivery);
   notifyOwner({
     title:`New ${isDelivery?"delivery":"pickup"} order ${orderId}: ₹${subtotal()}`,
     lines:lines.slice(3,-2),

@@ -43,12 +43,21 @@ function bindProfile(acc){
   $("pfName").value=acc.profile.full_name||"";
   $("pfPhone").value=acc.profile.phone||"";
   $("pfEmail").value=acc.user.email;
+  const addrBox=$("pfAddress");   // customer page only
+  const addrNote=()=>{if($("pfAddrNote"))$("pfAddrNote").textContent=!acc.profile.address?"":acc.profile.address_lat!=null
+    ?"✅ Location verified. Your next delivery order won't need verifying again."
+    :"📍 This address will be verified on your next delivery order."};
+  if(addrBox){addrBox.value=acc.profile.address||"";addrNote()}
   $("profileForm").onsubmit=async e=>{
     e.preventDefault();
-    const full_name=$("pfName").value.trim(), phone=$("pfPhone").value.trim();
-    const {error}=await sb.from("profiles").update({full_name,phone}).eq("id",acc.user.id);
+    const upd={full_name:$("pfName").value.trim(),phone:$("pfPhone").value.trim()};
+    if(addrBox){
+      const address=addrBox.value.trim()||null;
+      if(address!==(acc.profile.address||null))Object.assign(upd,{address,address_lat:null,address_lng:null,address_source:null});  // edited → verify again
+    }
+    const {error}=await sb.from("profiles").update(upd).eq("id",acc.user.id);
     const m=$("profileMsg");m.className="msg "+(error?"bad":"ok");m.textContent=error?error.message:"✅ Profile saved.";
-    if(!error){acc.profile.full_name=full_name;acc.profile.phone=phone;document.querySelectorAll(".js-user").forEach(el=>el.textContent=full_name||acc.user.email)}
+    if(!error){Object.assign(acc.profile,upd);addrNote();document.querySelectorAll(".js-user").forEach(el=>el.textContent=upd.full_name||acc.user.email)}
   };
 }
 
