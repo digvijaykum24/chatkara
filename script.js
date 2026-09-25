@@ -122,14 +122,24 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drawer.classList.co
 // Enquire / Reserve form -> saved in Supabase, shown in the Admin Dashboard (Enquiries)
 const enqDate=document.getElementById("enqDate");
 enqDate.min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+// Request type cards + guest stepper
+document.querySelectorAll('input[name="enqTypeChoice"]').forEach(r=>r.addEventListener("change",()=>{
+  document.getElementById("enqType").value=r.value;
+  document.getElementById("enqBooking").classList.toggle("hidden",r.value==="General Enquiry");
+}));
+document.querySelectorAll(".enq-stepper [data-step]").forEach(b=>b.onclick=()=>{
+  const g=document.getElementById("enqGuests");
+  g.value=Math.min(500,Math.max(1,(parseInt(g.value,10)||0)+Number(b.dataset.step)));
+});
 document.getElementById("contactForm").onsubmit=async e=>{
   e.preventDefault();
   const v=id=>document.getElementById(id).value.trim();
   const msg=document.getElementById("formMsg"), btn=e.target.querySelector('button[type="submit"]');
   const say=(text,ok)=>{msg.textContent=text;msg.className="form-msg "+(ok?"ok":"bad")};
   if(!v("enqName")||!v("enqPhone"))return say("Please enter your name and phone number.",false);
+  const booking=v("enqType")!=="General Enquiry";
   const row={enquiry_type:v("enqType"),name:v("enqName"),phone:v("enqPhone"),
-    guests:v("enqGuests")?+v("enqGuests"):null,visit_date:v("enqDate")||null,visit_time:v("enqTime")||null,
+    guests:booking&&v("enqGuests")?+v("enqGuests"):null,visit_date:booking&&v("enqDate")||null,visit_time:booking&&v("enqTime")||null,
     message:v("enqMsg")||null};
 
   btn.disabled=true;say("Sending…",true);
@@ -144,7 +154,7 @@ document.getElementById("contactForm").onsubmit=async e=>{
   const when=[v("enqDate")&&new Date(v("enqDate")+"T00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"}),v("enqTime")&&new Date(`2000-01-01T${v("enqTime")}`).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true})].filter(Boolean).join(" at ");
   notifyOwner({title:`New enquiry: ${v("enqType")}`,lines:[`Name: ${v("enqName")}`,...(v("enqGuests")?[`Guests: ${v("enqGuests")}`]:[]),...(when?[`For: ${when}`]:[])],tags:["calendar","bell"]});
   say(`✅ Thank you, ${v("enqName")}! Your ${v("enqType").toLowerCase()} request has been received. We'll call you on ${v("enqPhone")} to confirm.`,true);
-  ["enqGuests","enqDate","enqTime","enqMsg"].forEach(id=>document.getElementById(id).value="");
+  ["enqDate","enqTime","enqMsg"].forEach(id=>document.getElementById(id).value="");document.getElementById("enqGuests").value=2;
 };
 
 // Instagram: paste the profile link here (e.g. "https://www.instagram.com/your_handle/").
