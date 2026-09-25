@@ -123,3 +123,12 @@ document.getElementById("contactForm").onsubmit=e=>{
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
   document.getElementById("formMsg").classList.remove("hidden");
 };
+
+// Instagram: paste the profile link here (e.g. "https://www.instagram.com/your_handle/").
+// While empty, the icons show but do nothing when tapped.
+const INSTAGRAM_URL="";
+document.querySelectorAll(".insta-link").forEach(a=>{
+  if(INSTAGRAM_URL){a.href=INSTAGRAM_URL;return}
+  a.classList.add("is-empty");a.removeAttribute("target");
+  a.addEventListener("click",e=>e.preventDefault());
+});
