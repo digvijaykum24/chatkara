@@ -1,37 +1,34 @@
-// Full menu from the Chatkara menu card. Each item: [name, fullPrice, halfPrice?]
-const menuData=[
-{cat:"Specials",items:[["Chicken Dehati",449],["Chicken Dum Biryani",180,99],["Veg Manchurian",120]]},
-{cat:"Chinese Veg",items:[["Paneer Chilli Dry",200],["Paneer Chilli Gravy",200,100],["Paneer Pakoda",150],["Paneer Paper",200],["Paneer 65",200],["Mushroom Chilli Dry",200],["Mushroom Chilli Gravy",200],["Mushroom Crepes",220]]},
-{cat:"Chinese Non-Veg",items:[["Chicken Chilli Dry",200],["Chicken Chilli Gravy",180,90],["Chicken 65",200],["Chicken Paper",200],["Chicken Lollipop",230]]},
-{cat:"Noodles",items:[["Veg Noodles",60,35],["Egg D. Noodles",80,45],["Mix Veg Noodles",110],["Garlic Noodles",130,70],["Veg Szechwan Noodles",120],["Chicken Noodles",140,80],["Mushroom Noodles",130]]},
-{cat:"Soup",items:[["Veg Hot & Sour Soup",80],["Garlic Soup",120],["Chicken Hot & Sour Soup",150]]},
-{cat:"Veg Indian",items:[["Paneer Kadai",230,110],["Paneer Handi",230],["Paneer Masala",180,100],["Paneer Butter Masala",200,100],["Paneer Kofta",250],["Paneer Do Pyaza",230,120],["Shahi Paneer",250],["Mutter Paneer",200],["Mushroom Paneer",230],["Mushroom Masala",220],["Mushroom Handi",250],["Mushroom Kadai",230],["Mushroom Butter Masala",230],["Mushroom Do Pyaza",230],["Mushroom Mutter",230]]},
-{cat:"Daal",items:[["Daal Fry",80],["Daal Tadka",150],["Daal Butter",150],["Daal Makhni",150]]},
-{cat:"Indian Non-Veg",items:[["Chicken Kadai",250,130],["Chicken Handi",260,150],["Chicken Butter Masala",270,140],["Chicken Egg Masala",260,150],["Chicken Curry",250,130],["Chicken Do Pyaza",260,140],["Chicken Hyderabadi",270,150],["Chicken Kassa",270,150],["Chicken Korma",260,140],["Omelette Curry",140],["Egg Curry",100]]},
-{cat:"Biryani & Rice",items:[["Chicken Dum Biryani",180,99],["Egg Biryani",120],["Veg Biryani",130],["Plain Rice",70],["Jeera Rice",100],["Veg Pulao",150],["Peas Pulao",150]]},
-{cat:"Bread",items:[["Tawa Roti (per pc)",8],["Tawa Butter Roti (per pc)",12],["Lachha Paratha (per pc)",25],["Plain Paratha (per pc)",20]]},
-{cat:"Rolls",items:[["Egg D. Roll",50],["Egg D. Chicken Roll",100],["Chicken Roll",80],["Paneer Roll",70],["Mushroom Roll",90],["Veg Roll",30],["Paneer Kathi Roll",100]]}
-];
-// Cart keys are "Name" or "Name (Full)" / "Name (Half)"; the same dish in two categories shares a key.
+// Menu: loaded from the Supabase "products" table (edited in the Admin Dashboard).
+// Built-in copy of the menu card, used until the database answers or if it can't be reached.
+// Each row: [category, name, fullPrice, halfPrice, veg(1/0), special(1/0), specialTag, description]
+const FALLBACK_MENU=[["Chinese Veg","Paneer Chilli Dry",200,null,1,0,null,null],["Chinese Veg","Paneer Chilli Gravy",200,100,1,0,null,null],["Chinese Veg","Paneer Pakoda",150,null,1,0,null,null],["Chinese Veg","Paneer Paper",200,null,1,0,null,null],["Chinese Veg","Paneer 65",200,null,1,0,null,null],["Chinese Veg","Mushroom Chilli Dry",200,null,1,0,null,null],["Chinese Veg","Mushroom Chilli Gravy",200,null,1,0,null,null],["Chinese Veg","Mushroom Crepes",220,null,1,0,null,null],["Chinese Veg","Veg Manchurian",120,null,1,1,"Veg Favourite","Crispy veg balls tossed in a tangy Indo-Chinese sauce."],["Chinese Non-Veg","Chicken Chilli Dry",200,null,0,0,null,null],["Chinese Non-Veg","Chicken Chilli Gravy",180,90,0,0,null,null],["Chinese Non-Veg","Chicken 65",200,null,0,0,null,null],["Chinese Non-Veg","Chicken Paper",200,null,0,0,null,null],["Chinese Non-Veg","Chicken Lollipop",230,null,0,0,null,null],["Noodles","Veg Noodles",60,35,1,0,null,null],["Noodles","Egg D. Noodles",80,45,0,0,null,null],["Noodles","Mix Veg Noodles",110,null,1,0,null,null],["Noodles","Garlic Noodles",130,70,1,0,null,null],["Noodles","Veg Szechwan Noodles",120,null,1,0,null,null],["Noodles","Chicken Noodles",140,80,0,0,null,null],["Noodles","Mushroom Noodles",130,null,1,0,null,null],["Soup","Veg Hot & Sour Soup",80,null,1,0,null,null],["Soup","Garlic Soup",120,null,1,0,null,null],["Soup","Chicken Hot & Sour Soup",150,null,0,0,null,null],["Veg Indian","Paneer Kadai",230,110,1,0,null,null],["Veg Indian","Paneer Handi",230,null,1,0,null,null],["Veg Indian","Paneer Masala",180,100,1,0,null,null],["Veg Indian","Paneer Butter Masala",200,100,1,0,null,null],["Veg Indian","Paneer Kofta",250,null,1,0,null,null],["Veg Indian","Paneer Do Pyaza",230,120,1,0,null,null],["Veg Indian","Shahi Paneer",250,null,1,0,null,null],["Veg Indian","Mutter Paneer",200,null,1,0,null,null],["Veg Indian","Mushroom Paneer",230,null,1,0,null,null],["Veg Indian","Mushroom Masala",220,null,1,0,null,null],["Veg Indian","Mushroom Handi",250,null,1,0,null,null],["Veg Indian","Mushroom Kadai",230,null,1,0,null,null],["Veg Indian","Mushroom Butter Masala",230,null,1,0,null,null],["Veg Indian","Mushroom Do Pyaza",230,null,1,0,null,null],["Veg Indian","Mushroom Mutter",230,null,1,0,null,null],["Daal","Daal Fry",80,null,1,0,null,null],["Daal","Daal Tadka",150,null,1,0,null,null],["Daal","Daal Butter",150,null,1,0,null,null],["Daal","Daal Makhni",150,null,1,0,null,null],["Indian Non-Veg","Chicken Kadai",250,130,0,0,null,null],["Indian Non-Veg","Chicken Handi",260,150,0,0,null,null],["Indian Non-Veg","Chicken Butter Masala",270,140,0,0,null,null],["Indian Non-Veg","Chicken Egg Masala",260,150,0,0,null,null],["Indian Non-Veg","Chicken Curry",250,130,0,0,null,null],["Indian Non-Veg","Chicken Do Pyaza",260,140,0,0,null,null],["Indian Non-Veg","Chicken Hyderabadi",270,150,0,0,null,null],["Indian Non-Veg","Chicken Kassa",270,150,0,0,null,null],["Indian Non-Veg","Chicken Korma",260,140,0,0,null,null],["Indian Non-Veg","Omelette Curry",140,null,0,0,null,null],["Indian Non-Veg","Egg Curry",100,null,0,0,null,null],["Indian Non-Veg","Chicken Dehati",449,null,0,1,"Signature","Our desi-style house special, rich, spicy and full of flavour."],["Biryani & Rice","Chicken Dum Biryani",180,99,0,1,"Bestseller","Fragrant rice and tender chicken, slow-cooked on dum."],["Biryani & Rice","Egg Biryani",120,null,0,0,null,null],["Biryani & Rice","Veg Biryani",130,null,1,0,null,null],["Biryani & Rice","Plain Rice",70,null,1,0,null,null],["Biryani & Rice","Jeera Rice",100,null,1,0,null,null],["Biryani & Rice","Veg Pulao",150,null,1,0,null,null],["Biryani & Rice","Peas Pulao",150,null,1,0,null,null],["Bread","Tawa Roti (per pc)",8,null,1,0,null,null],["Bread","Tawa Butter Roti (per pc)",12,null,1,0,null,null],["Bread","Lachha Paratha (per pc)",25,null,1,0,null,null],["Bread","Plain Paratha (per pc)",20,null,1,0,null,null],["Rolls","Egg D. Roll",50,null,0,0,null,null],["Rolls","Egg D. Chicken Roll",100,null,0,0,null,null],["Rolls","Chicken Roll",80,null,0,0,null,null],["Rolls","Paneer Roll",70,null,1,0,null,null],["Rolls","Mushroom Roll",90,null,1,0,null,null],["Rolls","Veg Roll",30,null,1,0,null,null],["Rolls","Paneer Kathi Roll",100,null,1,0,null,null]];
+
+// Cart keys are "Name" or "Name (Full)" / "Name (Half)".
 const priceByKey={};
-menuData.forEach(g=>g.items.forEach(([n,full,half])=>{
-  if(half){priceByKey[`${n} (Full)`]=full;priceByKey[`${n} (Half)`]=half}else priceByKey[n]=full;
-}));
-const isNonVeg=n=>/chicken|egg|omelette/i.test(n);
-const featuredInfo={
-  "Chicken Dehati":{tag:"Signature",desc:"Our desi-style house special, rich, spicy and full of flavour."},
-  "Chicken Dum Biryani":{tag:"Bestseller",desc:"Fragrant rice and tender chicken, slow-cooked on dum."},
-  "Veg Manchurian":{tag:"Veg Favourite",desc:"Crispy veg balls tossed in a tangy Indo-Chinese sauce."}
-};
-const specials=menuData.find(g=>g.cat==="Specials").items;
-const listGroups=menuData.filter(g=>g.cat!=="Specials");
-const cats=["All","Specials",...listGroups.map(g=>g.cat)];
+let listGroups=[], specials=[], cats=[], featuredInfo={}, vegByName={};
+function buildMenu(rows){
+  Object.keys(priceByKey).forEach(k=>delete priceByKey[k]);
+  featuredInfo={};vegByName={};specials=[];
+  const groups=new Map();
+  rows.forEach(r=>{
+    const item=[r.name,r.price_full,r.price_half||undefined];
+    if(!groups.has(r.category))groups.set(r.category,[]);
+    groups.get(r.category).push(item);
+    if(r.is_special){specials.push(item);featuredInfo[r.name]={tag:r.special_tag||"Special",desc:r.description||""}}
+    vegByName[r.name]=r.is_veg;
+    if(r.price_half){priceByKey[`${r.name} (Full)`]=r.price_full;priceByKey[`${r.name} (Half)`]=r.price_half}else priceByKey[r.name]=r.price_full;
+  });
+  listGroups=[...groups].map(([cat,items])=>({cat,items}));
+  cats=["All",...(specials.length?["Specials"]:[]),...listGroups.map(g=>g.cat)];
+}
+buildMenu(FALLBACK_MENU.map(([category,name,price_full,price_half,v,s,special_tag,description])=>({category,name,price_full,price_half,is_veg:!!v,is_special:!!s,special_tag,description})));
+const isNonVeg=n=>n in vegByName?!vegByName[n]:/chicken|egg|omelette/i.test(n);
 const catLabel=c=>c==="Specials"?"★ Chef's Specials":c;
 const categories=document.getElementById("categories"), grid=document.getElementById("menuGrid"), featured=document.getElementById("featured");
 let current="All", search="", vegOnly=false;
 
 function renderCats(){
-  categories.innerHTML=cats.map(c=>`<button type="button" role="tab" aria-selected="${c===current}" class="cat-chip ${c===current?'active':''}" onclick="setCat('${c}')">${catLabel(c)}</button>`).join("");
+  categories.innerHTML=cats.map(c=>`<button type="button" role="tab" aria-selected="${c===current}" class="cat-chip ${c===current?'active':''}" onclick="setCat(this.dataset.cat)" data-cat="${esc(c)}">${esc(catLabel(c))}</button>`).join("");
   // Centre the active chip in the horizontal bar (without scrolling the page)
   const a=categories.querySelector(".active");
   if(a)categories.scrollTo({left:a.offsetLeft-(categories.clientWidth-a.offsetWidth)/2,behavior:"smooth"});
@@ -39,11 +36,11 @@ function renderCats(){
 const priceOpts=(n,full,half)=>half?[["Half",half,`${n} (Half)`],["Full",full,`${n} (Full)`]]:[["",full,n]];
 const dietDot=n=>`<span class="diet ${isNonVeg(n)?'nonveg':'veg'}" title="${isNonVeg(n)?'Non-veg':'Veg'}"></span>`;
 function dishRow([n,full,half]){
-  return `<div class="dish${half?" multi":""}"><div class="dish-main">${dietDot(n)}<span class="dish-name">${n}</span><span class="leader" aria-hidden="true"></span></div><div class="dish-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></div>`;
+  return `<div class="dish${half?" multi":""}"><div class="dish-main">${dietDot(n)}<span class="dish-name">${esc(n)}</span><span class="leader" aria-hidden="true"></span></div><div class="dish-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></div>`;
 }
 function featuredCard([n,full,half]){
   const info=featuredInfo[n]||{tag:"Special",desc:""};
-  return `<article class="feature-card"><div class="feature-top"><span class="feature-tag">${info.tag}</span>${dietDot(n)}</div><h3>${n}</h3><p>${info.desc}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
+  return `<article class="feature-card"><div class="feature-top"><span class="feature-tag">${esc(info.tag)}</span>${dietDot(n)}</div><h3>${esc(n)}</h3><p>${esc(info.desc)}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
 }
 const matches=n=>(!vegOnly||!isNonVeg(n))&&(!search||n.toLowerCase().includes(search));
 function renderMenu(){
@@ -56,7 +53,7 @@ function renderMenu(){
     .map(g=>({cat:g.cat,items:(search&&g.cat.toLowerCase().includes(search))?g.items.filter(([n])=>!vegOnly||!isNonVeg(n)):g.items.filter(([n])=>matches(n))}))
     .filter(g=>g.items.length);
   grid.innerHTML=groups.length
-    ?groups.map(g=>`<section class="menu-group"><header class="group-head"><h3>${g.cat}</h3><span>${g.items.length} ${g.items.length>1?"dishes":"dish"}</span></header>${g.items.map(dishRow).join("")}</section>`).join("")
+    ?groups.map(g=>`<section class="menu-group"><header class="group-head"><h3>${esc(g.cat)}</h3><span>${g.items.length} ${g.items.length>1?"dishes":"dish"}</span></header>${g.items.map(dishRow).join("")}</section>`).join("")
     :feat.length?"":`<p class="menu-empty">${search?`No dishes found for “${search.replace(/[<>&]/g,"")}”. Try paneer, biryani or roll.`:"No veg dishes in this category. Turn off “Veg only” to see all."}</p>`;
 }
 // Bring the results into view when the user is scrolled past them
@@ -67,6 +64,20 @@ function scrollToResults(){
 window.setCat=c=>{current=c;clearSearch();renderCats();renderMenu();scrollToResults()};
 document.getElementById("vegOnly").addEventListener("change",e=>{vegOnly=e.target.checked;renderMenu()});
 renderCats();renderMenu();
+
+// Swap in the live menu from the database (prices/dishes edited by the admin)
+async function loadProducts(){
+  if(!sb)return;
+  const {data,error}=await sb.from("products").select("category,name,price_full,price_half,is_veg,is_special,special_tag,description").order("sort_order");
+  if(error||!data?.length)return;
+  buildMenu(data);
+  Object.keys(cart).forEach(k=>{if(!(k in priceByKey))delete cart[k]});   // dish removed or renamed
+  if(!cats.includes(current))current="All";
+  renderCats();renderMenu();renderCart();
+}
+loadProducts();
+prefillFromAccount();
+restoreOrderDraft();
 
 // Navbar menu search
 const searchInputs=document.querySelectorAll(".menu-search input");
@@ -108,20 +119,32 @@ backdrop.onclick=()=>setDrawer(false);
 drawer.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>setDrawer(false)));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&drawer.classList.contains("open"))setDrawer(false)});
 
-// Enquire / Reserve form -> WhatsApp (WHATSAPP_NUMBER comes from order.js)
+// Enquire / Reserve form -> saved in Supabase, shown in the Admin Dashboard (Enquiries)
 const enqDate=document.getElementById("enqDate");
 enqDate.min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-document.getElementById("contactForm").onsubmit=e=>{
+document.getElementById("contactForm").onsubmit=async e=>{
   e.preventDefault();
   const v=id=>document.getElementById(id).value.trim();
-  const when=[v("enqDate")&&new Date(v("enqDate")+"T00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short",year:"numeric"}),v("enqTime")&&new Date(`2000-01-01T${v("enqTime")}`).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true})].filter(Boolean).join(" at ");
-  const lines=[`*${v("enqType")} — Chatkara Family Restaurant*`,"",`Name: ${v("enqName")}`,`Phone: ${v("enqPhone")}`];
-  if(v("enqGuests"))lines.push(`Guests: ${v("enqGuests")}`);
-  if(when)lines.push(`Date/Time: ${when}`);
-  if(v("enqMsg"))lines.push(`Message: ${v("enqMsg")}`);
-  notifyOwner({title:`New enquiry: ${v("enqType")}`,lines:lines.slice(2),tags:["calendar","bell"]});
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
-  document.getElementById("formMsg").classList.remove("hidden");
+  const msg=document.getElementById("formMsg"), btn=e.target.querySelector('button[type="submit"]');
+  const say=(text,ok)=>{msg.textContent=text;msg.className="form-msg "+(ok?"ok":"bad")};
+  if(!v("enqName")||!v("enqPhone"))return say("Please enter your name and phone number.",false);
+  const row={enquiry_type:v("enqType"),name:v("enqName"),phone:v("enqPhone"),
+    guests:v("enqGuests")?+v("enqGuests"):null,visit_date:v("enqDate")||null,visit_time:v("enqTime")||null,
+    message:v("enqMsg")||null};
+
+  btn.disabled=true;say("Sending…",true);
+  let ok=false;
+  try{
+    if(sb){ok=!(await sb.from("enquiries").insert(row)).error}
+    else{ok=(await fetch(`${SUPABASE_URL}/rest/v1/enquiries`,{method:"POST",headers:{apikey:SUPABASE_KEY,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify(row)})).ok}
+  }catch{}
+  btn.disabled=false;
+  if(!ok)return say("Sorry, we couldn't send your request. Please check your internet and try again, or call 086770 44213.",false);
+
+  const when=[v("enqDate")&&new Date(v("enqDate")+"T00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"}),v("enqTime")&&new Date(`2000-01-01T${v("enqTime")}`).toLocaleTimeString("en-IN",{hour:"numeric",minute:"2-digit",hour12:true})].filter(Boolean).join(" at ");
+  notifyOwner({title:`New enquiry: ${v("enqType")}`,lines:[`Name: ${v("enqName")}`,...(v("enqGuests")?[`Guests: ${v("enqGuests")}`]:[]),...(when?[`For: ${when}`]:[])],tags:["calendar","bell"]});
+  say(`✅ Thank you, ${v("enqName")}! Your ${v("enqType").toLowerCase()} request has been received. We'll call you on ${v("enqPhone")} to confirm.`,true);
+  ["enqGuests","enqDate","enqTime","enqMsg"].forEach(id=>document.getElementById(id).value="");
 };
 
 // Instagram: paste the profile link here (e.g. "https://www.instagram.com/your_handle/").
@@ -132,3 +155,15 @@ document.querySelectorAll(".insta-link").forEach(a=>{
   a.classList.add("is-empty");a.removeAttribute("target");
   a.addEventListener("click",e=>e.preventDefault());
 });
+
+// Navbar / drawer account button: "Login" or "My Account" / "Admin"
+(async()=>{
+  const acc=await getAccount().catch(()=>null);
+  if(!acc)return;
+  const admin=acc.profile.role==="admin";
+  document.querySelectorAll(".js-account").forEach(a=>{
+    a.href=dashboardFor(acc);
+    a.setAttribute("aria-label",admin?"Admin dashboard":"My account");
+    a.querySelector(".js-account-label").textContent=admin?"Admin":"My Account";
+  });
+})();

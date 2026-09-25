@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Chatkara Family Restaurant</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=DM+Sans:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css?v=3">
+</head>
+<body class="dash">
+  <main class="auth-wrap">
+    <div class="auth-card">
+      <a href="index.html" class="brand-logo"><img src="chatkara-logo-192.png" alt="" width="48" height="48"><span class="brand-text"><span class="brand-name">Chatkara</span><span class="brand-sub">Family Restaurant</span></span></a>
+
+      <p id="orderNote" class="order-note-box hidden">🛒 Login or create a free account to place your order. Your cart is saved.</p>
+      <div class="auth-tabs" role="tablist">
+        <button type="button" id="tabLogin" class="active" role="tab">Login</button>
+        <button type="button" id="tabSignup" role="tab">Sign up</button>
+      </div>
+
+      <!-- Login -->
+      <form id="loginForm" novalidate>
+        <h1>Welcome back</h1>
+        <p class="muted">Log in to see your orders and reorder faster.</p>
+        <div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="loginPass">Password</label><input id="loginPass" type="password" autocomplete="current-password" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Login</button>
+        <p id="loginMsg" class="msg" role="status"></p>
+        <div class="auth-links"><button type="button" class="link-btn" id="forgotBtn">Forgot password?</button><a href="index.html">← Back to website</a></div>
+      </form>
+
+      <!-- Sign up -->
+      <form id="signupForm" class="hidden" novalidate>
+        <h1>Create account</h1>
+        <p class="muted">Track your order requests and save your details.</p>
+        <div class="field"><label for="suName">Full name</label><input id="suName" autocomplete="name" maxlength="100" required></div>
+        <div class="field"><label for="suPhone">Phone number</label><input id="suPhone" type="tel" autocomplete="tel" maxlength="20" required></div>
+        <div class="field"><label for="suEmail">Email</label><input id="suEmail" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="suPass">Password (min 8 characters)</label><input id="suPass" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Create account</button>
+        <p id="signupMsg" class="msg" role="status"></p>
+        <div class="auth-links"><span></span><a href="index.html">← Back to website</a></div>
+      </form>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js?v=1"></script>
+  <script src="login.js?v=2"></script>
+</body>
+</html>

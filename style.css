@@ -185,7 +185,7 @@
 #navbar.nav-scrolled .brand-sub{color:#a9381e}
 .footer .brand-logo img{width:64px;height:64px}
 @media(max-width:380px){.brand-name{font-size:1.45rem}.brand-sub{font-size:.55rem;letter-spacing:.16em}#navbar .brand-logo img{width:48px;height:48px}}
-@media(min-width:1024px) and (max-width:1279px){#navbar .brand-sub{display:none}#navbar .call-btn{display:none}}
+@media(min-width:1024px) and (max-width:1279px){#navbar .brand-sub{display:none}}
 
 /* Animated hamburger */
 .burger{width:46px;height:46px;border:0;border-radius:14px;background:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer;box-shadow:0 6px 18px #0003;transition:background .2s}
@@ -311,3 +311,28 @@ body.no-scroll{overflow:hidden}
 .to-top:hover svg{transform:translateY(-3px)}
 @media(max-width:639px){.footer-bottom{padding-bottom:5.5rem}}
 @media(prefers-reduced-motion:reduce){.site-footer *{transition:none!important}}
+
+/* Navbar account button */
+.account-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.7rem 1rem;border-radius:999px;font-weight:800;font-size:.9rem;text-decoration:none;
+  color:#20110d;background:#fff;border:1px solid rgba(32,17,13,.12);box-shadow:0 6px 18px #0002;transition:.25s}
+.account-btn:hover{transform:translateY(-2px);background:#ffc45c}
+#navbar.nav-scrolled .account-btn{background:#20110d;color:#fff;border-color:#20110d}
+#navbar.nav-scrolled .account-btn:hover{background:#e44d22}
+@media(max-width:639px){.account-btn{padding:0;width:46px;height:46px;justify-content:center;border-radius:14px}.account-btn .js-account-label{display:none}}
+.drawer-btn.account{gap:.5rem;background:#2e1a14;border:1px solid rgba(255,196,92,.35);color:#ffc45c}
+
+/* Enquiry form status */
+.form-msg{margin:.8rem 0 0;text-align:center;font-weight:700;min-height:1.2em}
+.form-msg.ok{color:#15803d}.form-msg.bad{color:#b91c1c}
+#contactForm button:disabled{opacity:.6;cursor:wait}
+
+/* Navbar cart icon */
+.nav-cart{position:relative;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;border:1px solid rgba(32,17,13,.12);
+  background:#fff;color:#20110d;cursor:pointer;box-shadow:0 6px 18px #0002;transition:.25s}
+.nav-cart:hover{transform:translateY(-2px);background:#ffc45c}
+.nav-cart-count{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#e44d22;color:#fff;
+  font-size:.7rem;font-weight:800;display:grid;place-items:center;border:2px solid #fff;animation:cartPop .3s ease}
+.nav-cart-count.hidden{display:none}
+@keyframes cartPop{from{transform:scale(.4)}to{transform:scale(1)}}
+#navbar.nav-scrolled .nav-cart{background:#20110d;color:#fff;border-color:#20110d}
+#navbar.nav-scrolled .nav-cart:hover{background:#e44d22}

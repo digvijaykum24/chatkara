@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account | Chatkara Family Restaurant</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=DM+Sans:wght@400;500;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css?v=3">
+</head>
+<body class="dash">
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div class="side-top">
+        <a href="index.html" class="brand-logo"><img src="chatkara-logo-192.png" alt="" width="48" height="48"><span class="brand-text"><span class="brand-name">Chatkara</span><span class="brand-sub">My Account</span></span></a>
+        <div class="top-actions"><a class="btn btn-ghost btn-sm" href="index.html#menu">Order</a><button class="btn btn-danger btn-sm js-logout">Logout</button></div>
+      </div>
+      <nav class="side-nav" aria-label="Account">
+        <button data-tab="orders"><span class="ico">🧾</span>My Orders</button>
+        <button data-tab="profile"><span class="ico">👤</span>Profile</button>
+        <button data-tab="password"><span class="ico">🔒</span>Change Password</button>
+      </nav>
+      <div class="side-foot">
+        <div class="side-user">Signed in as<br><b class="js-user"></b></div>
+        <a class="btn btn-primary" href="index.html#menu">🍽️ Order Food</a>
+        <button class="btn btn-danger js-logout">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="tab-orders" class="tab">
+        <div class="page-head"><div><h1>Hi, <span class="js-user"></span> 👋</h1><p>Your order requests and their status.</p></div><a class="btn btn-primary" href="index.html#menu">🍽️ Order Food</a></div>
+        <div class="stats">
+          <div class="stat"><span>Orders</span><b id="stCount">0</b></div>
+          <div class="stat"><span>Pending</span><b id="stPending">0</b></div>
+          <div class="stat"><span>Completed</span><b id="stDone">0</b></div>
+          <div class="stat"><span>Total spent</span><b id="stSpent">₹0</b><small>confirmed + completed</small></div>
+        </div>
+        <div id="myOrders" class="list"><p class="loading">Loading your orders…</p></div>
+      </section>
+
+      <section id="tab-profile" class="tab hidden">
+        <div class="page-head"><div><h1>Profile</h1><p>Used to fill in your order details automatically.</p></div></div>
+        <form id="profileForm" class="card narrow">
+          <div class="field"><label for="pfName">Full name</label><input id="pfName" maxlength="100" autocomplete="name"></div>
+          <div class="field"><label for="pfPhone">Phone number</label><input id="pfPhone" type="tel" maxlength="20" autocomplete="tel"></div>
+          <div class="field"><label for="pfEmail">Email</label><input id="pfEmail" disabled></div>
+          <button class="btn btn-primary" type="submit">Save profile</button>
+          <p id="profileMsg" class="msg" role="status"></p>
+        </form>
+      </section>
+
+      <section id="tab-password" class="tab hidden">
+        <div class="page-head"><div><h1>Change Password</h1><p id="resetNote">Choose a new password (at least 8 characters).</p></div></div>
+        <form id="passwordForm" class="card narrow">
+          <div class="field"><label for="newPass">New password</label><input id="newPass" type="password" autocomplete="new-password" minlength="8"></div>
+          <div class="field"><label for="newPass2">Confirm new password</label><input id="newPass2" type="password" autocomplete="new-password" minlength="8"></div>
+          <button class="btn btn-primary" type="submit">Update password</button>
+          <p id="passMsg" class="msg" role="status"></p>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js?v=1"></script>
+  <script src="dash.js?v=1"></script>
+  <script src="account.js?v=1"></script>
+</body>
+</html>

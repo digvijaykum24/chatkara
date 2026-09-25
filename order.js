@@ -22,6 +22,50 @@ function notifyOwner({title,lines,tags}){
   }catch{}
 }
 
+// Every order request / enquiry is saved to Supabase (config.js). When the customer is
+// logged in, the database links it to their account so it shows in their dashboard.
+function saveToSupabase(table,row){
+  try{
+    if(sb)return sb.from(table).insert(row).then(({error})=>{if(error)console.warn("Supabase save failed",error.message)});
+    return fetch(`${SUPABASE_URL}/rest/v1/${table}`,{method:"POST",keepalive:true,
+      headers:{apikey:SUPABASE_KEY,"Content-Type":"application/json",Prefer:"return=minimal"},
+      body:JSON.stringify(row)
+    }).catch(()=>{});
+  }catch{}
+}
+
+// Ordering requires an account (the database also rejects orders from logged-out visitors).
+let currentAccount=null, accountChecked=false;
+async function prefillFromAccount(){
+  currentAccount=await getAccount().catch(()=>null);
+  accountChecked=true;
+  if(currentAccount){
+    const fill=(id,v)=>{const el=$(id);if(el&&v&&!el.value)el.value=v};
+    fill("custName",currentAccount.profile.full_name);fill("custPhone",currentAccount.profile.phone);
+    fill("enqName",currentAccount.profile.full_name);fill("enqPhone",currentAccount.profile.phone);
+  }
+  validateOrder();
+}
+
+// Keep the cart while the customer logs in / signs up, then bring them back to finish the order
+const DRAFT_KEY="chatkara-order-draft";
+function saveOrderDraft(){
+  try{localStorage.setItem(DRAFT_KEY,JSON.stringify({t:Date.now(),cart,type:orderType(),
+    name:$("custName").value,phone:$("custPhone").value,address:addressEl.value,note:$("custNote").value,loc:customerLoc}))}catch{}
+}
+function restoreOrderDraft(){          // called from script.js once the menu prices are known
+  let d=null;
+  try{d=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");localStorage.removeItem(DRAFT_KEY)}catch{}
+  if(!d||Date.now()-d.t>864e5)return;
+  Object.entries(d.cart||{}).forEach(([k,q])=>{if(k in priceByKey&&q>0)cart[k]=q});
+  const radio=document.querySelector(`input[name="orderType"][value="${d.type}"]`);if(radio)radio.checked=true;
+  const set=(id,v)=>{if(v&&!$(id).value)$(id).value=v};
+  set("custName",d.name);set("custPhone",d.phone);set("custNote",d.note);
+  if(d.address){addressEl.value=d.address;if(d.loc)setLocation(d.loc.lat,d.loc.lng,d.loc.source)}
+  renderMenu();renderCart();
+  if(itemCount()&&location.hash==="#order")orderPanel.classList.remove("hidden");
+}
+
 const cart={};                                   // item name -> qty
 let customerLoc=null;                            // {lat,lng,km,source}
 
@@ -56,7 +100,7 @@ const orderType=()=>document.querySelector('input[name="orderType"]:checked').va
 function renderCart(){
   const count=itemCount(), sub=subtotal();
   $("cartFab").classList.toggle("hidden",!count);
-  $("cartFabCount").textContent=count;$("cartFabWord").textContent=count===1?"item":"items";$("cartFabTotal").textContent=sub;
+  $("cartFabCount").textContent=count;$("navCartCount").textContent=count>99?"99+":count;$("navCartCount").classList.toggle("hidden",!count);$("navCart").setAttribute("aria-label",`Open cart, ${count} ${count===1?"item":"items"}`);$("cartFabWord").textContent=count===1?"item":"items";$("cartFabTotal").textContent=sub;
   $("subtotal").textContent=sub;
   $("cartItems").innerHTML=count
     ?Object.entries(cart).map(([n,q])=>`<div class="cart-line"><span>${n}</span>${qtyControl(n)}<b>₹${priceOf(n)*q}</b></div>`).join("")
@@ -81,6 +125,12 @@ function validateOrder(){
   const isDelivery=orderType()==="delivery";
   $("deliveryFields").classList.toggle("hidden",!isDelivery);
   verifyBtn.disabled=!addressEl.value.trim();
+  if(!currentAccount){
+    $("ruleMsg").textContent=accountChecked?"🔐 Please login or sign up to place your order. Your cart will be saved.":"";
+    $("waOrderBtn").disabled=!accountChecked||!itemCount();
+    $("waOrderBtn").textContent="🔐 Login / Sign up to Order";
+    return;
+  }
   const problem=orderProblem();
   $("ruleMsg").textContent=problem;
   $("waOrderBtn").disabled=!!problem;
@@ -129,12 +179,15 @@ addressEl.addEventListener("input",()=>{if(customerLoc){customerLoc=null;locStat
 ["custName","custPhone"].forEach(id=>$(id).addEventListener("input",validateOrder));
 document.querySelectorAll('input[name="orderType"]').forEach(r=>r.addEventListener("change",validateOrder));
 
-$("cartFab").onclick=()=>{orderPanel.classList.remove("hidden");validateOrder()};
+const openCart=()=>{orderPanel.classList.remove("hidden");validateOrder()};
+$("cartFab").onclick=openCart;
+$("navCart").onclick=openCart;
 $("closeOrder").onclick=()=>orderPanel.classList.add("hidden");
 orderPanel.onclick=e=>{if(e.target===orderPanel)orderPanel.classList.add("hidden")};
 
 $("orderForm").onsubmit=e=>{
   e.preventDefault();
+  if(!currentAccount){if(accountChecked&&itemCount()){saveOrderDraft();location.href="login.html?next=order"}return}
   if(orderProblem())return validateOrder();
   const isDelivery=orderType()==="delivery";
   // Order ID appears in both the WhatsApp message and the owner's alert, so the
@@ -157,6 +210,20 @@ $("orderForm").onsubmit=e=>{
   const note=$("custNote").value.trim();
   if(note)lines.push(`Note: ${note}`);
   lines.push("","Please confirm my order.");
+  saveToSupabase("orders",{
+    order_code:orderId,
+    order_type:isDelivery?"delivery":"pickup",
+    items:Object.entries(cart).map(([n,q])=>({name:n,qty:q,price:priceOf(n),total:priceOf(n)*q})),
+    subtotal:subtotal(),
+    customer_name:$("custName").value.trim(),
+    customer_phone:$("custPhone").value.trim(),
+    address:isDelivery?addressEl.value.trim():null,
+    distance_km:isDelivery?+customerLoc.km.toFixed(2):null,
+    location_lat:isDelivery?customerLoc.lat:null,
+    location_lng:isDelivery?customerLoc.lng:null,
+    location_source:isDelivery?customerLoc.source:null,
+    note:note||null
+  });
   notifyOwner({
     title:`New ${isDelivery?"delivery":"pickup"} order ${orderId}: ₹${subtotal()}`,
     lines:lines.slice(3,-2),
@@ -164,7 +231,7 @@ $("orderForm").onsubmit=e=>{
   });
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`,"_blank");
   const sent=$("orderSentMsg");
-  sent.textContent=`✅ Order request ${orderId} is ready in WhatsApp. Tap Send there. Our team will review it and confirm your order.`;
+  sent.innerHTML=`✅ Order request ${orderId} is ready in WhatsApp. Tap Send there. Our team will review it and confirm your order. <a href="account.html">Track it in My Account →</a>`;
   sent.classList.remove("hidden");
 };
 
