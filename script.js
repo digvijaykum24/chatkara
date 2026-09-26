@@ -96,6 +96,7 @@ function collapseFullMenu(){
 fmBtn.onclick=()=>fullMenu.hidden?setFullMenu(true,true):collapseFullMenu();
 document.getElementById("hideFullMenuBottom").onclick=collapseFullMenu;
 if(location.hash==="#full-menu")setFullMenu(true,false);
+document.getElementById("heroOrderNow").onclick=e=>{e.preventDefault();setFullMenu(true,true)};
 // Bring the results into view when the user is scrolled past them
 function scrollToResults(){
   if(grid.getBoundingClientRect().top<0)grid.scrollIntoView({behavior:"smooth"});
