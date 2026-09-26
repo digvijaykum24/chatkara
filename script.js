@@ -198,7 +198,7 @@ document.getElementById("contactForm").onsubmit=async e=>{
 
 // Instagram: paste the profile link here (e.g. "https://www.instagram.com/your_handle/").
 // While empty, the icons show but do nothing when tapped.
-const INSTAGRAM_URL="";
+const INSTAGRAM_URL="https://www.instagram.com/chatkara_restro_barh/";
 document.querySelectorAll(".insta-link").forEach(a=>{
   if(INSTAGRAM_URL){a.href=INSTAGRAM_URL;return}
   a.classList.add("is-empty");a.removeAttribute("target");

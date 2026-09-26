@@ -461,3 +461,21 @@ body.no-scroll{overflow:hidden}
 .dish-thumb{width:46px;height:46px;border-radius:12px;object-fit:cover;flex-shrink:0;background:#2a1610}
 @media(max-width:480px){.dish-thumb{width:40px;height:40px}}
 .pick-img,.feature-img{max-width:none}
+
+/* Named customer reviews */
+.review-named{position:relative;display:flex;flex-direction:column;gap:1rem;padding:1.6rem 1.6rem 1.4rem;
+  background:linear-gradient(160deg,rgba(255,196,92,.09),transparent 55%),#2b1813;border-color:rgba(255,196,92,.28)}
+.review-quote{position:absolute;top:.4rem;right:1.2rem;font-family:"Playfair Display",serif;font-size:4.5rem;line-height:1;color:rgba(255,196,92,.25)}
+.review-named p{margin:0;font-size:1.02rem;line-height:1.75;color:#f3e6df}
+.review-named footer{display:flex;align-items:center;gap:.75rem;margin-top:auto;padding-top:1rem;border-top:1px solid rgba(255,255,255,.08)}
+.review-named footer b{display:block;color:#fff;font-size:.95rem}
+.review-named footer small{color:#a38e84;font-size:.78rem}
+.review-avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font-weight:800;color:#20110d;background:linear-gradient(135deg,#ffc45c,#f08a24)}
+
+.review-quote{position:static;display:block;height:1.7rem;font-size:3.4rem;line-height:1;color:#ffc45c;opacity:.55}
+.review-named{gap:.6rem}
+
+/* About photo: real restaurant front (portrait) — show the whole sign on every screen */
+.image-frame picture{display:block}
+.image-frame img{height:auto;max-height:640px;aspect-ratio:900/1202;object-fit:cover;object-position:center top;box-shadow:0 30px 60px rgba(59,33,20,.18)}
+@media(max-width:700px){.image-frame img{height:auto;max-height:none}}
