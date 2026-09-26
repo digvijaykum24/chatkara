@@ -309,7 +309,7 @@ body.no-scroll{overflow:hidden}
 .to-top svg{transition:transform .25s}
 .to-top:hover{background:#ffc45c;color:#20110d!important}
 .to-top:hover svg{transform:translateY(-3px)}
-@media(max-width:639px){.footer-bottom{padding-bottom:5.5rem}}
+
 @media(prefers-reduced-motion:reduce){.site-footer *{transition:none!important}}
 
 /* Navbar account button */

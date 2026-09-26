@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=29">
   <script>
     tailwind.config = {
       theme: { extend: { fontFamily: {
@@ -452,7 +452,6 @@
   </footer>
 
   <!-- WhatsApp ordering -->
-  <button id="cartFab" class="cart-fab hidden" type="button">🛒 <span id="cartFabCount">0</span> <span id="cartFabWord">items</span> • ₹<span id="cartFabTotal">0</span></button>
   <div id="orderPanel" class="order-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
     <form id="orderForm" class="order-card" novalidate>
       <div class="flex justify-between items-center"><h3 id="orderTitle" class="font-display text-3xl">Your Order</h3><button type="button" id="closeOrder" class="order-close" aria-label="Close">✕</button></div>
@@ -485,7 +484,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="config.js?v=1"></script>
-  <script src="order.js?v=18"></script>
+  <script src="order.js?v=19"></script>
   <script src="script.js?v=22"></script>
 </body>
 </html>

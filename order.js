@@ -125,8 +125,7 @@ const orderType=()=>document.querySelector('input[name="orderType"]:checked').va
 
 function renderCart(){
   const count=itemCount(), sub=subtotal();
-  $("cartFab").classList.toggle("hidden",!count);
-  $("cartFabCount").textContent=count;$("navCartCount").textContent=count>99?"99+":count;$("navCartCount").classList.toggle("hidden",!count);$("navCart").setAttribute("aria-label",`Open cart, ${count} ${count===1?"item":"items"}`);$("cartFabWord").textContent=count===1?"item":"items";$("cartFabTotal").textContent=sub;
+  $("navCartCount").textContent=count>99?"99+":count;$("navCartCount").classList.toggle("hidden",!count);$("navCart").setAttribute("aria-label",`Open cart, ${count} ${count===1?"item":"items"}`);
   $("subtotal").textContent=sub;
   $("cartItems").innerHTML=count
     ?Object.entries(cart).map(([n,q])=>`<div class="cart-line"><span>${n}</span>${qtyControl(n)}<b>₹${priceOf(n)*q}</b></div>`).join("")
@@ -206,7 +205,7 @@ addressEl.addEventListener("input",()=>{if(customerLoc){customerLoc=null;locStat
 document.querySelectorAll('input[name="orderType"]').forEach(r=>r.addEventListener("change",validateOrder));
 
 const openCart=()=>{orderPanel.classList.remove("hidden");validateOrder()};
-$("cartFab").onclick=openCart;
+
 $("navCart").onclick=openCart;
 $("closeOrder").onclick=()=>orderPanel.classList.add("hidden");
 orderPanel.onclick=e=>{if(e.target===orderPanel)orderPanel.classList.add("hidden")};
