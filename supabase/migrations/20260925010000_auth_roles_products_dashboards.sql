@@ -112,4 +112,4 @@ alter publication supabase_realtime add table public.orders;
 
 -- The menu itself was seeded separately from the website's built-in menu (73 dishes).
 -- Make the owner an admin after they sign up:
---   update public.profiles set role = 'admin' where email = 'owner@example.com';
+--   update public.profiles set role = 'admin' where email = 'krishanabarhsingh@gmail.com';
