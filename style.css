@@ -447,3 +447,17 @@ body.no-scroll{overflow:hidden}
 .full-menu-cta.bottom{margin-top:2rem;padding-top:2rem;border-top:1px solid rgba(255,196,92,.14)}
 /* Menu heading lands just below the sticky header when scrolled to */
 #menu .menu-head{scroll-margin-top:calc(var(--hdr,80px) + 16px)}
+
+/* Wordmark: the "C" of Chatkara is a red chilli (as in the logo) */
+.brand-name{display:inline-flex;align-items:flex-end;white-space:nowrap}
+.chilli-c{height:1.42em;width:1.12em;margin-right:-.06em;flex-shrink:0;transform:translateY(.16em) rotate(-8deg);
+  filter:drop-shadow(0 1px 0 rgba(122,13,6,.6)) drop-shadow(0 2px 6px rgba(255,59,47,.35))}
+.chilli-c{transition:transform .3s}.brand-logo:hover .chilli-c{transform:translateY(.16em) rotate(-16deg)}
+
+/* Dish photos (uploaded by the admin) */
+.pick-img{width:calc(100% + 2.2rem);margin:-1.1rem -1.1rem .2rem;aspect-ratio:4/3;object-fit:cover;border-radius:20px 20px 0 0;display:block;background:#2a1610}
+.pick-card.has-img .pick-badge{top:10px;right:10px;z-index:1}
+.feature-img{width:calc(100% + 2.8rem);margin:-1.4rem -1.4rem 1rem;aspect-ratio:16/9;object-fit:cover;border-radius:22px 22px 0 0;display:block;background:#2a1610}
+.dish-thumb{width:46px;height:46px;border-radius:12px;object-fit:cover;flex-shrink:0;background:#2a1610}
+@media(max-width:480px){.dish-thumb{width:40px;height:40px}}
+.pick-img,.feature-img{max-width:none}

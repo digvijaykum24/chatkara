@@ -5,10 +5,10 @@ const FALLBACK_MENU=[["Chinese Veg","Paneer Chilli Dry",200,null,1,0,null,null],
 
 // Cart keys are "Name" or "Name (Full)" / "Name (Half)".
 const priceByKey={};
-let listGroups=[], specials=[], popular=[], bestsellers=[], cats=[], featuredInfo={}, vegByName={}, catByName={}, dishTotal=0;
+let imgByName={}, listGroups=[], specials=[], popular=[], bestsellers=[], cats=[], featuredInfo={}, vegByName={}, catByName={}, dishTotal=0;
 function buildMenu(rows){
   Object.keys(priceByKey).forEach(k=>delete priceByKey[k]);
-  featuredInfo={};vegByName={};catByName={};specials=[];popular=[];bestsellers=[];dishTotal=rows.length;
+  featuredInfo={};vegByName={};catByName={};imgByName={};specials=[];popular=[];bestsellers=[];dishTotal=rows.length;
   const groups=new Map();
   rows.forEach(r=>{
     const item=[r.name,r.price_full,r.price_half||undefined];
@@ -17,7 +17,7 @@ function buildMenu(rows){
     if(r.is_special){specials.push(item);featuredInfo[r.name]={tag:r.special_tag||"Special",desc:r.description||""}}
     if(r.is_popular)popular.push(item);
     if(r.is_bestseller)bestsellers.push(item);
-    vegByName[r.name]=r.is_veg;catByName[r.name]=r.category;
+    vegByName[r.name]=r.is_veg;catByName[r.name]=r.category;if(r.image_url)imgByName[r.name]=r.image_url;
     if(r.price_half){priceByKey[`${r.name} (Full)`]=r.price_full;priceByKey[`${r.name} (Half)`]=r.price_half}else priceByKey[r.name]=r.price_full;
   });
   listGroups=[...groups].map(([cat,items])=>({cat,items}));
@@ -39,18 +39,19 @@ function renderCats(){
   if(a)categories.scrollTo({left:a.offsetLeft-(categories.clientWidth-a.offsetWidth)/2,behavior:"smooth"});
 }
 const priceOpts=(n,full,half)=>half?[["Half",half,`${n} (Half)`],["Full",full,`${n} (Full)`]]:[["",full,n]];
+const dishImg=(n,cls)=>imgByName[n]?`<img class="${cls}" src="${esc(imgByName[n])}" alt="${esc(n)}" loading="lazy" decoding="async">`:"";
 const dietDot=n=>`<span class="diet ${isNonVeg(n)?'nonveg':'veg'}" title="${isNonVeg(n)?'Non-veg':'Veg'}"></span>`;
 function dishRow([n,full,half]){
-  return `<div class="dish${half?" multi":""}"><div class="dish-main">${dietDot(n)}<span class="dish-name">${esc(n)}</span><span class="leader" aria-hidden="true"></span></div><div class="dish-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></div>`;
+  return `<div class="dish${half?" multi":""}"><div class="dish-main">${dishImg(n,"dish-thumb")}${dietDot(n)}<span class="dish-name">${esc(n)}</span><span class="leader" aria-hidden="true"></span></div><div class="dish-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></div>`;
 }
 function featuredCard([n,full,half]){
   const info=featuredInfo[n]||{tag:"Special",desc:""};
-  return `<article class="feature-card"><div class="feature-top"><span class="feature-tag">${esc(info.tag)}</span>${dietDot(n)}</div><h3>${esc(n)}</h3><p>${esc(info.desc)}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
+  return `<article class="feature-card${imgByName[n]?" has-img":""}">${dishImg(n,"feature-img")}<div class="feature-top"><span class="feature-tag">${esc(info.tag)}</span>${dietDot(n)}</div><h3>${esc(n)}</h3><p>${esc(info.desc)}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
 }
 const matches=n=>(!vegOnly||!isNonVeg(n))&&(!search||n.toLowerCase().includes(search));
 const optsHtml=(n,full,half)=>priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("");
 function pickCard([n,full,half],badge){
-  return `<article class="pick-card">${badge?`<span class="pick-badge">${badge}</span>`:""}
+  return `<article class="pick-card${imgByName[n]?" has-img":""}">${badge?`<span class="pick-badge">${badge}</span>`:""}${dishImg(n,"pick-img")}
     <div class="pick-top">${dietDot(n)}<span class="pick-cat">${esc(catByName[n]||"")}</span></div>
     <h4>${esc(n)}</h4>
     <div class="pick-prices">${optsHtml(n,full,half)}</div></article>`;
@@ -106,7 +107,7 @@ renderCats();renderMenu();
 // Swap in the live menu from the database (prices/dishes edited by the admin)
 async function loadProducts(){
   if(!sb)return;
-  const {data,error}=await sb.from("products").select("category,name,price_full,price_half,is_veg,is_special,is_popular,is_bestseller,special_tag,description").order("sort_order");
+  const {data,error}=await sb.from("products").select("category,name,price_full,price_half,is_veg,is_special,is_popular,is_bestseller,special_tag,description,image_url").order("sort_order");
   if(error||!data?.length)return;
   buildMenu(data);
   Object.keys(cart).forEach(k=>{if(!(k in priceByKey))delete cart[k]});   // dish removed or renamed

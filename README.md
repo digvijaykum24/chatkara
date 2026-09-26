@@ -67,3 +67,6 @@ Every order request and enquiry is also saved in the Supabase project **chatkara
 - The menu on the website loads from the `products` table. A built-in copy in `script.js` is used only if the database cannot be reached.
 - Security is enforced in the database (row-level security): customers only see their own data, and only admins can see everything or change the menu.
 - Make someone admin (SQL editor in Supabase): `update public.profiles set role = 'admin' where email = 'their@email.com';`
+
+## Dish photos
+Admin > Products > Edit > **Upload photo**. Photos are resized in the browser (max 900px, WebP) and stored in the Supabase Storage bucket `product-images`. Only the admin can upload, replace or delete them; everyone can view them. Use real photos of your own dishes.

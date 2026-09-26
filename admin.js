@@ -104,7 +104,7 @@ function beep(){
 /* ================= Products ================= */
 async function loadProducts(){
   const {data,error}=await sb.from("products").select("*").order("sort_order");
-  if(error){$("productRows").innerHTML=`<tr><td colspan="7">${esc(error.message)}</td></tr>`;return}
+  if(error){$("productRows").innerHTML=`<tr><td colspan="8">${esc(error.message)}</td></tr>`;return}
   products=data;
   const cats=[...new Set(products.map(p=>p.category))];
   $("productCat").innerHTML=`<option value="">All categories</option>`+cats.map(c=>`<option>${esc(c)}</option>`).join("");
@@ -115,6 +115,7 @@ function renderProducts(){
   const q=$("productSearch").value.trim().toLowerCase(), cat=$("productCat").value;
   const list=products.filter(p=>(!cat||p.category===cat)&&(!q||p.name.toLowerCase().includes(q)));
   $("productRows").innerHTML=list.length?list.map(p=>`<tr class="${p.is_available?"":"tag-off"}">
+    <td>${p.image_url?`<img class="thumb" src="${esc(p.image_url)}" alt="" loading="lazy">`:'<span class="thumb empty" title="No photo yet">📷</span>'}</td>
     <td><span class="diet ${p.is_veg?"veg":"nonveg"}"></span>${esc(p.name)}</td>
     <td>${esc(p.category)}</td>
     <td class="num">${rupees(p.price_full)}</td>
@@ -122,7 +123,7 @@ function renderProducts(){
     <td>${[p.is_popular?'<span class="pill new">🔥 Popular</span>':"",p.is_bestseller?'<span class="pill completed">🏆 Best seller</span>':"",p.is_special?`<span class="pill type">🏷️ ${esc(p.special_tag||"Offer")}</span>`:""].join(" ")}</td>
     <td><label class="switch" title="Show on website"><input type="checkbox" data-avail="${p.id}" ${p.is_available?"checked":""}><span></span></label></td>
     <td class="num"><button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button> <button class="btn btn-danger btn-sm" data-del="${p.id}">Delete</button></td>
-  </tr>`).join(""):`<tr><td colspan="7" class="loading">No dishes found.</td></tr>`;
+  </tr>`).join(""):`<tr><td colspan="8" class="loading">No dishes found.</td></tr>`;
   $("productRows").querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openProduct(products.find(p=>p.id==b.dataset.edit)));
   $("productRows").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>deleteProduct(products.find(p=>p.id==b.dataset.del)));
   $("productRows").querySelectorAll("[data-avail]").forEach(c=>c.onchange=()=>saveProduct(+c.dataset.avail,{is_available:c.checked},c.checked?"Dish is now on the menu":"Dish hidden from the menu"));
@@ -141,7 +142,34 @@ async function deleteProduct(p){
   products=products.filter(x=>x.id!==p.id);renderProducts();toast("Dish deleted");
 }
 
-let editing=null;
+let editing=null, photoFile=null, photoRemoved=false;
+const BUCKET="product-images";
+function showPhoto(url){
+  $("pmPhotoPreview").innerHTML=url?`<img src="${esc(url)}" alt="">`:"<span>📷</span>";
+  $("pmPhotoRemove").classList.toggle("hidden",!url);
+}
+// Shrink the photo in the browser before uploading (max 900px, WebP ~80%) so the menu loads fast
+async function compressPhoto(file){
+  const bmp=await createImageBitmap(file);
+  const scale=Math.min(1,900/Math.max(bmp.width,bmp.height));
+  const c=document.createElement("canvas");c.width=Math.round(bmp.width*scale);c.height=Math.round(bmp.height*scale);
+  c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+  return await new Promise(res=>c.toBlob(res,"image/webp",.8));
+}
+$("pmPhoto").onchange=async()=>{
+  const f=$("pmPhoto").files[0];if(!f)return;
+  if(!f.type.startsWith("image/"))return toast("Please choose a photo");
+  try{photoFile=await compressPhoto(f)}catch{return toast("Could not read that photo")}
+  photoRemoved=false;showPhoto(URL.createObjectURL(photoFile));
+};
+$("pmPhotoRemove").onclick=()=>{photoFile=null;photoRemoved=true;$("pmPhoto").value="";showPhoto(null)};
+const storagePath=url=>{const m=String(url||"").match(/\/object\/public\/product-images\/(.+)$/);return m?decodeURIComponent(m[1]):null};
+async function uploadPhoto(productId){
+  const path=`dish-${productId}-${Date.now()}.webp`;
+  const {error}=await sb.storage.from(BUCKET).upload(path,photoFile,{contentType:"image/webp",cacheControl:"31536000"});
+  if(error)throw error;
+  return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}
 function openProduct(p){
   editing=p||null;
   $("pmTitle").textContent=p?"Edit dish":"Add dish";
@@ -151,6 +179,7 @@ function openProduct(p){
   $("pmTag").value=p?.special_tag||"";$("pmDesc").value=p?.description||"";
   $("pmSort").value=p?.sort_order??(Math.max(0,...products.map(x=>x.sort_order))+1);
   $("pmSpecialFields").classList.toggle("hidden",!$("pmSpecial").checked);
+  photoFile=null;photoRemoved=false;$("pmPhoto").value="";showPhoto(p?.image_url||null);
   $("pmMsg").textContent="";
   $("productModal").classList.remove("hidden");$("pmName").focus();
 }
@@ -175,6 +204,17 @@ $("productForm").onsubmit=async e=>{
     ?await sb.from("products").update({...row,updated_at:new Date().toISOString()}).eq("id",editing.id).select().single()
     :await sb.from("products").insert(row).select().single();
   if(res.error)return m.textContent=res.error.message.includes("duplicate")?"A dish with this name already exists.":res.error.message;
+  // Photo: upload the new one / remove the old one
+  const oldUrl=editing?.image_url||null;
+  if(photoFile||photoRemoved){
+    m.className="msg ok";m.textContent="Saving photo…";
+    try{
+      const image_url=photoFile?await uploadPhoto(res.data.id):null;
+      const up=await sb.from("products").update({image_url}).eq("id",res.data.id);
+      if(up.error)throw up.error;
+      const oldPath=storagePath(oldUrl);if(oldPath)sb.storage.from(BUCKET).remove([oldPath]);
+    }catch(err){m.className="msg bad";return m.textContent="Dish saved, but the photo failed: "+(err.message||err)}
+  }
   $("productModal").classList.add("hidden");
   toast(editing?"Dish updated":"Dish added");
   await loadProducts();
