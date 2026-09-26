@@ -119,7 +119,7 @@ function renderProducts(){
     <td>${esc(p.category)}</td>
     <td class="num">${rupees(p.price_full)}</td>
     <td class="num">${p.price_half?rupees(p.price_half):"–"}</td>
-    <td>${p.is_special?`<span class="pill type">★ ${esc(p.special_tag||"Special")}</span>`:""}</td>
+    <td>${[p.is_popular?'<span class="pill new">🔥 Popular</span>':"",p.is_bestseller?'<span class="pill completed">🏆 Best seller</span>':"",p.is_special?`<span class="pill type">🏷️ ${esc(p.special_tag||"Offer")}</span>`:""].join(" ")}</td>
     <td><label class="switch" title="Show on website"><input type="checkbox" data-avail="${p.id}" ${p.is_available?"checked":""}><span></span></label></td>
     <td class="num"><button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button> <button class="btn btn-danger btn-sm" data-del="${p.id}">Delete</button></td>
   </tr>`).join(""):`<tr><td colspan="7" class="loading">No dishes found.</td></tr>`;
@@ -147,7 +147,7 @@ function openProduct(p){
   $("pmTitle").textContent=p?"Edit dish":"Add dish";
   $("pmName").value=p?.name||"";$("pmCat").value=p?.category||"";
   $("pmFull").value=p?.price_full||"";$("pmHalf").value=p?.price_half||"";
-  $("pmVeg").checked=p?p.is_veg:true;$("pmAvail").checked=p?p.is_available:true;$("pmSpecial").checked=!!p?.is_special;
+  $("pmVeg").checked=p?p.is_veg:true;$("pmAvail").checked=p?p.is_available:true;$("pmSpecial").checked=!!p?.is_special;$("pmPopular").checked=!!p?.is_popular;$("pmBest").checked=!!p?.is_bestseller;
   $("pmTag").value=p?.special_tag||"";$("pmDesc").value=p?.description||"";
   $("pmSort").value=p?.sort_order??(Math.max(0,...products.map(x=>x.sort_order))+1);
   $("pmSpecialFields").classList.toggle("hidden",!$("pmSpecial").checked);
@@ -163,7 +163,7 @@ $("productForm").onsubmit=async e=>{
   e.preventDefault();
   const full=parseInt($("pmFull").value,10), half=$("pmHalf").value?parseInt($("pmHalf").value,10):null;
   const row={name:$("pmName").value.trim(),category:$("pmCat").value.trim(),price_full:full,price_half:half,
-    is_veg:$("pmVeg").checked,is_available:$("pmAvail").checked,is_special:$("pmSpecial").checked,
+    is_veg:$("pmVeg").checked,is_available:$("pmAvail").checked,is_special:$("pmSpecial").checked,is_popular:$("pmPopular").checked,is_bestseller:$("pmBest").checked,
     special_tag:$("pmSpecial").checked?($("pmTag").value.trim()||null):null,
     description:$("pmSpecial").checked?($("pmDesc").value.trim()||null):null,
     sort_order:parseInt($("pmSort").value,10)||0};

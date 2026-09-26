@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=24">
+  <link rel="stylesheet" href="style.css?v=28">
   <script>
     tailwind.config = {
       theme: { extend: { fontFamily: {
@@ -280,18 +280,32 @@
           <span class="section-tag light">OUR MENU</span>
           <h2 class="section-title light-text">Crafted with love,<br><em>served with Chatkara.</em></h2>
           <div class="menu-ornament" aria-hidden="true"><span></span>✦<span></span></div>
-          <p class="light-copy">Chinese, North Indian, biryani &amp; rolls, freshly cooked to order. Pick Full or Half portions and order in a tap on WhatsApp.</p>
+          <p class="light-copy">Chinese, North Indian, biryani &amp; rolls, freshly cooked to order. Here are our most-loved dishes. Open the full menu for all of them.</p>
         </div>
 
-        <div id="featured" class="featured-grid"></div>
+        <!-- Home page: selected dishes only -->
+        <div id="homePicks" class="picks"></div>
 
-        <div class="menu-toolbar">
-          <div id="categories" class="cat-scroll" role="tablist" aria-label="Menu categories"></div>
-          <label class="veg-toggle"><input id="vegOnly" type="checkbox"><span class="switch" aria-hidden="true"></span><span class="diet veg" aria-hidden="true"></span>Veg<span class="veg-only-word"> only</span></label>
+        <div class="full-menu-cta">
+          <button type="button" id="toggleFullMenu" class="full-menu-btn" aria-expanded="false" aria-controls="fullMenu">
+            <span class="fm-label">View Full Menu</span> <span id="dishCount" class="fm-count js-dish-count"></span> <span class="fm-arrow" aria-hidden="true">↓</span>
+          </button>
         </div>
 
-        <div id="menuGrid" class="menu-columns"></div>
-        <p class="menu-footnote">All prices in ₹ · Bread priced per piece · <span class="diet veg"></span> Veg <span class="diet nonveg"></span> Non-veg</p>
+        <!-- Full menu (opens with the button, a category link or a search) -->
+        <div id="fullMenu" class="full-menu" hidden>
+          <div class="menu-toolbar">
+            <div id="categories" class="cat-scroll" role="tablist" aria-label="Menu categories"></div>
+            <label class="veg-toggle"><input id="vegOnly" type="checkbox"><span class="switch" aria-hidden="true"></span><span class="diet veg" aria-hidden="true"></span>Veg<span class="veg-only-word"> only</span></label>
+          </div>
+          <div id="menuGrid" class="menu-columns"></div>
+          <p class="menu-footnote">All prices in ₹ · Bread priced per piece · <span class="diet veg"></span> Veg <span class="diet nonveg"></span> Non-veg</p>
+          <div class="full-menu-cta bottom">
+            <button type="button" id="hideFullMenuBottom" class="full-menu-btn open" aria-controls="fullMenu">
+              Hide Full Menu <span class="fm-count js-dish-count"></span> <span class="fm-arrow" aria-hidden="true">↑</span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -472,6 +486,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="config.js?v=1"></script>
   <script src="order.js?v=18"></script>
-  <script src="script.js?v=19"></script>
+  <script src="script.js?v=22"></script>
 </body>
 </html>

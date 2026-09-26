@@ -5,26 +5,31 @@ const FALLBACK_MENU=[["Chinese Veg","Paneer Chilli Dry",200,null,1,0,null,null],
 
 // Cart keys are "Name" or "Name (Full)" / "Name (Half)".
 const priceByKey={};
-let listGroups=[], specials=[], cats=[], featuredInfo={}, vegByName={};
+let listGroups=[], specials=[], popular=[], bestsellers=[], cats=[], featuredInfo={}, vegByName={}, catByName={}, dishTotal=0;
 function buildMenu(rows){
   Object.keys(priceByKey).forEach(k=>delete priceByKey[k]);
-  featuredInfo={};vegByName={};specials=[];
+  featuredInfo={};vegByName={};catByName={};specials=[];popular=[];bestsellers=[];dishTotal=rows.length;
   const groups=new Map();
   rows.forEach(r=>{
     const item=[r.name,r.price_full,r.price_half||undefined];
     if(!groups.has(r.category))groups.set(r.category,[]);
     groups.get(r.category).push(item);
     if(r.is_special){specials.push(item);featuredInfo[r.name]={tag:r.special_tag||"Special",desc:r.description||""}}
-    vegByName[r.name]=r.is_veg;
+    if(r.is_popular)popular.push(item);
+    if(r.is_bestseller)bestsellers.push(item);
+    vegByName[r.name]=r.is_veg;catByName[r.name]=r.category;
     if(r.price_half){priceByKey[`${r.name} (Full)`]=r.price_full;priceByKey[`${r.name} (Half)`]=r.price_half}else priceByKey[r.name]=r.price_full;
   });
   listGroups=[...groups].map(([cat,items])=>({cat,items}));
-  cats=["All",...(specials.length?["Specials"]:[]),...listGroups.map(g=>g.cat)];
+  cats=["All",...listGroups.map(g=>g.cat)];
 }
-buildMenu(FALLBACK_MENU.map(([category,name,price_full,price_half,v,s,special_tag,description])=>({category,name,price_full,price_half,is_veg:!!v,is_special:!!s,special_tag,description})));
+// Home page picks used until the database answers (the admin chooses them in Admin > Products)
+const FALLBACK_POPULAR=["Paneer Chilli Dry", "Chicken Chilli Gravy", "Chicken Lollipop", "Veg Noodles", "Paneer Butter Masala", "Chicken Kadai", "Paneer Roll", "Chicken 65"], FALLBACK_BESTSELLERS=["Chicken Butter Masala", "Chicken Roll", "Paneer Kadai", "Chicken Noodles", "Egg D. Roll"];
+buildMenu(FALLBACK_MENU.map(([category,name,price_full,price_half,v,s,special_tag,description])=>({category,name,price_full,price_half,is_veg:!!v,is_special:!!s,special_tag,description,
+  is_popular:FALLBACK_POPULAR.includes(name),is_bestseller:FALLBACK_BESTSELLERS.includes(name)})));
 const isNonVeg=n=>n in vegByName?!vegByName[n]:/chicken|egg|omelette/i.test(n);
-const catLabel=c=>c==="Specials"?"★ Chef's Specials":c;
-const categories=document.getElementById("categories"), grid=document.getElementById("menuGrid"), featured=document.getElementById("featured");
+const catLabel=c=>c;
+const categories=document.getElementById("categories"), grid=document.getElementById("menuGrid"), homePicks=document.getElementById("homePicks"), fullMenu=document.getElementById("fullMenu");
 let current="All", search="", vegOnly=false;
 
 function renderCats(){
@@ -43,23 +48,56 @@ function featuredCard([n,full,half]){
   return `<article class="feature-card"><div class="feature-top"><span class="feature-tag">${esc(info.tag)}</span>${dietDot(n)}</div><h3>${esc(n)}</h3><p>${esc(info.desc)}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
 }
 const matches=n=>(!vegOnly||!isNonVeg(n))&&(!search||n.toLowerCase().includes(search));
+const optsHtml=(n,full,half)=>priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("");
+function pickCard([n,full,half],badge){
+  return `<article class="pick-card">${badge?`<span class="pick-badge">${badge}</span>`:""}
+    <div class="pick-top">${dietDot(n)}<span class="pick-cat">${esc(catByName[n]||"")}</span></div>
+    <h4>${esc(n)}</h4>
+    <div class="pick-prices">${optsHtml(n,full,half)}</div></article>`;
+}
+function pickBlock(id,icon,title,sub,body){
+  return `<section class="pick-block" id="${id}"><header class="pick-head"><span class="pick-icon" aria-hidden="true">${icon}</span><div><h3>${title}</h3><p>${sub}</p></div></header>${body}</section>`;
+}
+// Home page: only selected dishes
+function renderPicks(){
+  let html="";
+  if(popular.length)html+=pickBlock("popular","🔥","Popular Items","What Barh loves to order",`<div class="pick-row">${popular.map(i=>pickCard(i)).join("")}</div>`);
+  if(bestsellers.length)html+=pickBlock("bestsellers","🏆","Best Sellers","Our most-ordered dishes",`<div class="pick-row">${bestsellers.map(i=>pickCard(i,"Bestseller")).join("")}</div>`);
+  if(specials.length)html+=pickBlock("offers","🏷️","Special Offers","Chef's specials at great prices",`<div class="featured-grid">${specials.map(featuredCard).join("")}</div>`);
+  homePicks.innerHTML=html;
+  document.querySelectorAll(".js-dish-count").forEach(el=>el.textContent=`· ${dishTotal} dishes`);
+}
 function renderMenu(){
-  // Chef's specials: featured cards (on "All"/"Specials", or when a search matches them)
-  const feat=(current==="All"||current==="Specials"||search)?specials.filter(([n])=>matches(n)):[];
-  featured.innerHTML=feat.length?`<div class="featured-label"><span>★</span> Chef's Specials</div>${feat.map(featuredCard).join("")}`:"";
-  featured.hidden=!feat.length;
-  // Regular menu list; a search looks across all categories
+  // Full menu list; a search looks across all categories
   const groups=(search||current==="All"?listGroups:listGroups.filter(g=>g.cat===current))
     .map(g=>({cat:g.cat,items:(search&&g.cat.toLowerCase().includes(search))?g.items.filter(([n])=>!vegOnly||!isNonVeg(n)):g.items.filter(([n])=>matches(n))}))
     .filter(g=>g.items.length);
   grid.innerHTML=groups.length
     ?groups.map(g=>`<section class="menu-group"><header class="group-head"><h3>${esc(g.cat)}</h3><span>${g.items.length} ${g.items.length>1?"dishes":"dish"}</span></header>${g.items.map(dishRow).join("")}</section>`).join("")
-    :feat.length?"":`<p class="menu-empty">${search?`No dishes found for “${search.replace(/[<>&]/g,"")}”. Try paneer, biryani or roll.`:"No veg dishes in this category. Turn off “Veg only” to see all."}</p>`;
+    :`<p class="menu-empty">${search?`No dishes found for “${search.replace(/[<>&]/g,"")}”. Try paneer, biryani or roll.`:"No veg dishes in this category. Turn off “Veg only” to see all."}</p>`;
+  renderPicks();   // keeps ADD / quantity buttons in sync on the home picks too
 }
+// Show / hide the full menu
+const fmBtn=document.getElementById("toggleFullMenu");
+function setFullMenu(open,scroll){
+  fullMenu.hidden=!open;
+  fmBtn.setAttribute("aria-expanded",open);
+  fmBtn.classList.toggle("open",open);
+  fmBtn.querySelector(".fm-label").textContent=open?"Hide Full Menu":"View Full Menu";
+  fmBtn.querySelector(".fm-arrow").textContent=open?"↑":"↓";
+  if(open&&scroll)fullMenu.scrollIntoView({behavior:"smooth"});
+}
+// Collapse the full menu and bring the customer back to the menu heading
+function collapseFullMenu(){
+  setFullMenu(false,false);
+  document.querySelector("#menu .menu-head").scrollIntoView({behavior:"smooth",block:"start"});
+}
+fmBtn.onclick=()=>fullMenu.hidden?setFullMenu(true,true):collapseFullMenu();
+document.getElementById("hideFullMenuBottom").onclick=collapseFullMenu;
+if(location.hash==="#full-menu")setFullMenu(true,false);
 // Bring the results into view when the user is scrolled past them
 function scrollToResults(){
-  const target=featured.hidden?grid:featured;
-  if(target.getBoundingClientRect().top<0)target.scrollIntoView({behavior:"smooth"});
+  if(grid.getBoundingClientRect().top<0)grid.scrollIntoView({behavior:"smooth"});
 }
 window.setCat=c=>{current=c;clearSearch();renderCats();renderMenu();scrollToResults()};
 document.getElementById("vegOnly").addEventListener("change",e=>{vegOnly=e.target.checked;renderMenu()});
@@ -68,7 +106,7 @@ renderCats();renderMenu();
 // Swap in the live menu from the database (prices/dishes edited by the admin)
 async function loadProducts(){
   if(!sb)return;
-  const {data,error}=await sb.from("products").select("category,name,price_full,price_half,is_veg,is_special,special_tag,description").order("sort_order");
+  const {data,error}=await sb.from("products").select("category,name,price_full,price_half,is_veg,is_special,is_popular,is_bestseller,special_tag,description").order("sort_order");
   if(error||!data?.length)return;
   buildMenu(data);
   Object.keys(cart).forEach(k=>{if(!(k in priceByKey))delete cart[k]});   // dish removed or renamed
@@ -86,9 +124,9 @@ searchInputs.forEach(input=>{
   input.addEventListener("input",()=>{
     search=input.value.trim().toLowerCase();
     searchInputs.forEach(i=>{if(i!==input)i.value=input.value});
-    if(search){current="All";renderCats()}
+    if(search){current="All";renderCats();setFullMenu(true,false)}
     renderMenu();
-    (featured.hidden?grid:featured).scrollIntoView({behavior:"smooth"});
+    if(search)grid.scrollIntoView({behavior:"smooth"});
   });
   input.addEventListener("keydown",e=>{if(e.key==="Escape"){clearSearch();renderMenu();input.blur()}});
 });

@@ -59,7 +59,7 @@
           <select class="input" id="productCat" style="flex:0 1 220px"><option value="">All categories</option></select>
         </div>
         <div class="table-wrap"><table class="data">
-          <thead><tr><th>Dish</th><th>Category</th><th class="num">Full</th><th class="num">Half</th><th>Special</th><th>Available</th><th></th></tr></thead>
+          <thead><tr><th>Dish</th><th>Category</th><th class="num">Full</th><th class="num">Half</th><th>Home page</th><th>Available</th><th></th></tr></thead>
           <tbody id="productRows"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
         </table></div>
       </section>
@@ -132,7 +132,9 @@
       </div>
       <label class="check"><input id="pmVeg" type="checkbox"> Veg dish</label>
       <label class="check"><input id="pmAvail" type="checkbox"> Available (show on website)</label>
-      <label class="check"><input id="pmSpecial" type="checkbox"> Chef's Special (featured card)</label>
+      <label class="check"><input id="pmPopular" type="checkbox"> 🔥 Popular item (home page)</label>
+      <label class="check"><input id="pmBest" type="checkbox"> 🏆 Best seller (home page)</label>
+      <label class="check"><input id="pmSpecial" type="checkbox"> 🏷️ Special offer (home page, featured card)</label>
       <div id="pmSpecialFields">
         <div class="field"><label for="pmTag">Special label (e.g. Bestseller)</label><input id="pmTag" maxlength="30"></div>
         <div class="field"><label for="pmDesc">Short description</label><textarea id="pmDesc" rows="2" maxlength="300"></textarea></div>
@@ -146,6 +148,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="config.js?v=1"></script>
   <script src="dash.js?v=2"></script>
-  <script src="admin.js?v=3"></script>
+  <script src="admin.js?v=4"></script>
 </body>
 </html>
