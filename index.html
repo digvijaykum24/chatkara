@@ -32,7 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="stylesheet" href="style.css?v=38">
+  <link rel="stylesheet" href="style.css?v=39">
   <script>
     tailwind.config = {
       theme: { extend: { fontFamily: {
@@ -221,6 +221,13 @@
 </head>
 <body>
   <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+    <!-- Top announcement band: fixed above the navbar, moves slowly left → right -->
+    <div class="marquee" role="marquee" aria-label="CHATKARA FAMILY RESTAURANT: स्वाद जो याद रह जाए. Fresh and delicious food. Perfect place for family and friends. Special offers available.">
+      <div class="marquee-track" aria-hidden="true">
+        <div class="marquee-group"><span class="mq-item">🍽️ CHATKARA FAMILY RESTAURANT</span><span class="mq-dot">•</span><span class="mq-item">😋 स्वाद जो याद रह जाए</span><span class="mq-dot">•</span><span class="mq-item">🥘 Fresh &amp; Delicious Food</span><span class="mq-dot">•</span><span class="mq-item">❤️ Perfect Place for Family &amp; Friends</span><span class="mq-dot">•</span><span class="mq-item">🔥 Special Offers Available</span><span class="mq-dot">•</span></div>
+        <div class="marquee-group"><span class="mq-item">🍽️ CHATKARA FAMILY RESTAURANT</span><span class="mq-dot">•</span><span class="mq-item">😋 स्वाद जो याद रह जाए</span><span class="mq-dot">•</span><span class="mq-item">🥘 Fresh &amp; Delicious Food</span><span class="mq-dot">•</span><span class="mq-item">❤️ Perfect Place for Family &amp; Friends</span><span class="mq-dot">•</span><span class="mq-item">🔥 Special Offers Available</span><span class="mq-dot">•</span></div>
+      </div>
+    </div>
     <nav class="max-w-7xl mx-auto px-5 lg:px-8 h-20 flex items-center justify-between">
       <a href="#home" class="brand-logo" aria-label="Chatkara Family Restaurant Home">
         <img src="chatkara-logo-192.png" alt="Chatkara logo" width="56" height="56">
@@ -280,13 +287,6 @@
       </div>
     </section>
 
-    <!-- Scrolling highlight band (moves slowly left → right) -->
-    <div class="marquee" role="marquee" aria-label="CHATKARA FAMILY RESTAURANT: स्वाद जो याद रह जाए. Fresh and delicious food. Perfect place for family and friends. Special offers available.">
-      <div class="marquee-track" aria-hidden="true">
-        <div class="marquee-group"><span class="mq-item">🍽️ CHATKARA FAMILY RESTAURANT</span><span class="mq-dot">•</span><span class="mq-item">😋 स्वाद जो याद रह जाए</span><span class="mq-dot">•</span><span class="mq-item">🥘 Fresh &amp; Delicious Food</span><span class="mq-dot">•</span><span class="mq-item">❤️ Perfect Place for Family &amp; Friends</span><span class="mq-dot">•</span><span class="mq-item">🔥 Special Offers Available</span><span class="mq-dot">•</span></div>
-        <div class="marquee-group"><span class="mq-item">🍽️ CHATKARA FAMILY RESTAURANT</span><span class="mq-dot">•</span><span class="mq-item">😋 स्वाद जो याद रह जाए</span><span class="mq-dot">•</span><span class="mq-item">🥘 Fresh &amp; Delicious Food</span><span class="mq-dot">•</span><span class="mq-item">❤️ Perfect Place for Family &amp; Friends</span><span class="mq-dot">•</span><span class="mq-item">🔥 Special Offers Available</span><span class="mq-dot">•</span></div>
-      </div>
-    </div>
 
     <section id="about" class="section">
       <div class="max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">

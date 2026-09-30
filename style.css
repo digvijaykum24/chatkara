@@ -498,3 +498,15 @@ body.no-scroll{overflow:hidden}
 @keyframes marqueeLTR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
 @media(max-width:640px){.mq-item{font-size:.9rem;padding:.8rem 1.1rem}.marquee-track{animation-duration:38s}}
 @media(prefers-reduced-motion:reduce){.marquee-track{animation:none}.order-now-btn{animation:none}}
+
+/* ===== Announcement band fixed at the very top (inside the fixed header, above the navbar) ===== */
+#navbar .marquee{border-top:0;border-bottom:1px solid rgba(255,196,92,.6);box-shadow:none}
+#navbar .mq-item{padding:.5rem 1.2rem;font-size:.86rem}
+#navbar .mq-dot{font-size:1.1rem}
+@media(max-width:640px){#navbar .mq-item{padding:.45rem .9rem;font-size:.8rem}}
+
+/* Everything below is measured from the real header height (--hdr, set by script.js) */
+.hero>.relative{padding-top:calc(var(--hdr,125px) + 2rem)!important}
+main section[id]:not(#home){scroll-margin-top:max(0px,calc(var(--hdr,125px) - 60px))}
+.full-menu{scroll-margin-top:calc(var(--hdr,125px) + 10px)}
+#menuGrid{scroll-margin-top:calc(var(--hdr,125px) + 85px)}
