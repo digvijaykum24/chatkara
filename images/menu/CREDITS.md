@@ -15,7 +15,14 @@ The photos below are from Wikimedia Commons and are used under the licence shown
 | Egg D. Noodles | [Egg noodles-MB28.jpg](https://commons.wikimedia.org/wiki/File:Egg_noodles-MB28.jpg) | Rajeeb Dutta | CC BY-SA 4.0 |
 | Egg D. Roll | [EGG ROLL.JPG](https://commons.wikimedia.org/wiki/File:EGG_ROLL.JPG) | Satadaldas1966 | CC BY-SA 4.0 |
 | Garlic Noodles | [Crustacean Beverly Hills Garlic Noodles.jpg](https://commons.wikimedia.org/wiki/File:Crustacean_Beverly_Hills_Garlic_Noodles.jpg) | Crustacean Beverly Hills | CC0 |
+| Mushroom Butter Masala | [Mushroom Butter Masala (15914329462).jpg](https://commons.wikimedia.org/wiki/File:Mushroom_Butter_Masala_(15914329462).jpg) | Yummy O Yummy | CC BY 2.0 |
+| Mushroom Chilli Dry | [Mushroom Manchurian dry.jpg](https://commons.wikimedia.org/wiki/File:Mushroom_Manchurian_dry.jpg) | Anuradhayeluri | CC BY-SA 4.0 |
+| Mushroom Do Pyaza | [Mushroom Masala by Dr. Raju Kasambe IMG 20190701 (5).jpg](https://commons.wikimedia.org/wiki/File:Mushroom_Masala_by_Dr._Raju_Kasambe_IMG_20190701_(5).jpg) | Dr. Raju Kasambe | CC BY-SA 4.0 |
+| Mushroom Handi | [Mushroom Masala by Dr. Raju Kasambe IMG 20190701 (7).jpg](https://commons.wikimedia.org/wiki/File:Mushroom_Masala_by_Dr._Raju_Kasambe_IMG_20190701_(7).jpg) | Dr. Raju Kasambe | CC BY-SA 4.0 |
+| Mushroom Kadai | [Mushroom and Capsicum Kadai curry - sharper and spicier, rich deep flavour. -mycookingadventures -vegcookingadventures (39535227371).jpg](https://commons.wikimedia.org/wiki/File:Mushroom_and_Capsicum_Kadai_curry_-_sharper_and_spicier,_rich_deep_flavour._-mycookingadventures_-vegcookingadventures_(39535227371).jpg) | transcendancing | CC BY-SA 2.0 |
+| Mushroom Masala | [Mushroom Masala by Dr. Raju Kasambe IMG 20190701 (9).jpg](https://commons.wikimedia.org/wiki/File:Mushroom_Masala_by_Dr._Raju_Kasambe_IMG_20190701_(9).jpg) | Dr. Raju Kasambe | CC BY-SA 4.0 |
 | Mutter Paneer | [Matar-Paneer.JPG](https://commons.wikimedia.org/wiki/File:Matar-Paneer.JPG) | Mdsmds0 | CC BY-SA 4.0 |
+| Paneer Do Pyaza | [Paneer Do-Pyaza.jpg](https://commons.wikimedia.org/wiki/File:Paneer_Do-Pyaza.jpg) | Prads2189 | CC BY-SA 4.0 |
 | Paneer Kathi Roll | [Paneer kathi roll homemade.jpg](https://commons.wikimedia.org/wiki/File:Paneer_kathi_roll_homemade.jpg) | Shafana jasmine | CC BY-SA 4.0 |
 | Paneer Kofta | [Kofta Curry (cropped).JPG](https://commons.wikimedia.org/wiki/File:Kofta_Curry_(cropped).JPG) | Miansari66 | CC0 |
 | Paneer Pakoda | [Tofu Pakora.jpg](https://commons.wikimedia.org/wiki/File:Tofu_Pakora.jpg) | einalem | CC BY-SA 2.0 |
