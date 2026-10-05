@@ -70,3 +70,9 @@ Every order request and enquiry is also saved in the Supabase project **chatkara
 
 ## Dish photos
 Admin > Products > Edit > **Upload photo**. Photos are resized in the browser (max 900px, WebP) and stored in the Supabase Storage bucket `product-images`. Only the admin can upload, replace or delete them; everyone can view them. Use real photos of your own dishes.
+
+## Category food photos
+`images/menu/` holds one food-type photo per menu category (free photos from Unsplash, Unsplash License, self-hosted and compressed). They are mapped in `CATEGORY_IMG` in `script.js`. A dish photo uploaded in Admin > Products always replaces its category photo. The menu footnote says "Photos are for illustration".
+
+## Dish photos (one per menu item)
+`images/menu/dishes/` has a matching photo for every dish (600x450 WebP) and `thumbs/` a 120px version for the full-menu list. They are mapped by dish name in `DISH_IMG` in `script.js` (free Unsplash photos, Unsplash License). Order of preference: the admin's own uploaded photo > dish photo > category photo. If you rename a dish in Admin, add the new name to `DISH_IMG` (or upload a photo for it).

@@ -40,18 +40,33 @@ function renderCats(){
 }
 const priceOpts=(n,full,half)=>half?[["Half",half,`${n} (Half)`],["Full",full,`${n} (Full)`]]:[["",full,n]];
 const dishImg=(n,cls)=>imgByName[n]?`<img class="${cls}" src="${esc(imgByName[n])}" alt="${esc(n)}" loading="lazy" decoding="async">`:"";
+// Food-type photo for each menu category (free Unsplash photos, self-hosted in images/menu/).
+// A dish's own uploaded photo (Admin > Products) always wins over its category photo.
+const CATEGORY_IMG={
+  "Chinese Veg":"images/menu/chinese-veg.webp","Chinese Non-Veg":"images/menu/chinese-non-veg.webp",
+  "Noodles":"images/menu/noodles.webp","Soup":"images/menu/soup.webp","Veg Indian":"images/menu/veg-indian.webp",
+  "Daal":"images/menu/daal.webp","Indian Non-Veg":"images/menu/indian-non-veg.webp","Biryani & Rice":"images/menu/biryani-rice.webp",
+  "Bread":"images/menu/bread.webp","Rolls":"images/menu/rolls.webp"
+};
+// Matching photo for every dish (free Unsplash photos, self-hosted: images/menu/dishes/<id>.webp + thumbs/<id>.webp).
+// Order of preference: the admin's own uploaded photo > this dish photo > the category photo.
+const DISH_IMG={"Paneer Chilli Dry":"1680991172715","Paneer Chilli Gravy":"1676976197902","Paneer Pakoda":"wm-paneer-pakoda","Paneer Paper":"wm-paneer-paper","Paneer 65":"1567188040759","Mushroom Chilli Dry":"1652088063505","Mushroom Chilli Gravy":"1687445071092","Mushroom Crepes":"1788843304145","Veg Manchurian":"1676976197084","Chicken Chilli Dry":"1756821753481","Chicken Chilli Gravy":"1702705497146","Chicken 65":"1775717430472","Chicken Paper":"1603496987351","Chicken Lollipop":"1766589221324","Veg Noodles":"1789990661701","Egg D. Noodles":"wm-egg-d-noodles","Mix Veg Noodles":"1634864572865","Garlic Noodles":"wm-garlic-noodles","Veg Szechwan Noodles":"1716535232835","Chicken Noodles":"1772729219168","Mushroom Noodles":"1772729219249","Veg Hot & Sour Soup":"1651928692935","Garlic Soup":"1611745451987","Chicken Hot & Sour Soup":"1587727547527","Paneer Kadai":"1642821369314","Paneer Handi":"1631452180519","Paneer Masala":"1680359871262","Paneer Butter Masala":"1631452180519","Paneer Kofta":"wm-paneer-kofta","Paneer Do Pyaza":"1781332146569","Shahi Paneer":"1628462626251","Mutter Paneer":"wm-mutter-paneer","Mushroom Paneer":"1696950168808","Mushroom Masala":"1659603851579","Mushroom Handi":"1680359871262","Mushroom Kadai":"1508338712271","Mushroom Butter Masala":"1680359869958","Mushroom Do Pyaza":"1652088063505","Mushroom Mutter":"1585937421612","Daal Fry":"1697155406121","Daal Tadka":"1755090154817","Daal Butter":"1736680056444","Daal Makhni":"1789983665266","Chicken Kadai":"1708782340793","Chicken Handi":"1710091691771","Chicken Butter Masala":"1603894584373","Chicken Egg Masala":"wm-chicken-egg-masala","Chicken Curry":"1764304733301","Chicken Do Pyaza":"wm-chicken-do-pyaza","Chicken Hyderabadi":"wm-chicken-hyderabadi","Chicken Kassa":"1596797038530","Chicken Korma":"wm-chicken-korma","Omelette Curry":"1780704664094","Egg Curry":"1764315197254","Chicken Dehati":"wm-chicken-dehati","Chicken Dum Biryani":"1589302168068","Egg Biryani":"1591100497919","Veg Biryani":"1789990653700","Plain Rice":"1536304993881","Jeera Rice":"1789991184293","Veg Pulao":"wm-veg-pulao","Peas Pulao":"1789992252165","Tawa Roti (per pc)":"1600935926387","Tawa Butter Roti (per pc)":"wm-tawa-butter-roti-per-pc","Lachha Paratha (per pc)":"1683533761804","Plain Paratha (per pc)":"1586524068358","Egg D. Roll":"wm-egg-d-roll","Egg D. Chicken Roll":"wm-egg-d-chicken-roll","Chicken Roll":"wm-chicken-roll","Paneer Roll":"wm-paneer-roll","Mushroom Roll":"1752095809096","Veg Roll":"wm-veg-roll","Paneer Kathi Roll":"wm-paneer-kathi-roll"};
+const dishPhoto=n=>DISH_IMG[n]?`images/menu/dishes/${DISH_IMG[n]}.webp`:"";
+const dishThumb=n=>imgByName[n]||(DISH_IMG[n]?`images/menu/dishes/thumbs/${DISH_IMG[n]}.webp`:"");
+const cardImgSrc=n=>imgByName[n]||dishPhoto(n)||CATEGORY_IMG[catByName[n]]||"";
+const cardImg=(n,cls)=>cardImgSrc(n)?`<img class="${cls}" src="${esc(cardImgSrc(n))}" alt="${esc(n)}" loading="lazy" decoding="async" width="800" height="600">`:"";
 const dietDot=n=>`<span class="diet ${isNonVeg(n)?'nonveg':'veg'}" title="${isNonVeg(n)?'Non-veg':'Veg'}"></span>`;
 function dishRow([n,full,half]){
-  return `<div class="dish${half?" multi":""}"><div class="dish-main">${dishImg(n,"dish-thumb")}${dietDot(n)}<span class="dish-name">${esc(n)}</span><span class="leader" aria-hidden="true"></span></div><div class="dish-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></div>`;
+  return `<div class="dish${half?" multi":""}"><div class="dish-main">${dishThumb(n)?`<img class="dish-thumb" src="${esc(dishThumb(n))}" alt="" loading="lazy" decoding="async" width="120" height="120">`:""}${dietDot(n)}<span class="dish-name">${esc(n)}</span><span class="leader" aria-hidden="true"></span></div><div class="dish-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></div>`;
 }
 function featuredCard([n,full,half]){
   const info=featuredInfo[n]||{tag:"Special",desc:""};
-  return `<article class="feature-card${imgByName[n]?" has-img":""}">${dishImg(n,"feature-img")}<div class="feature-top"><span class="feature-tag">${esc(info.tag)}</span>${dietDot(n)}</div><h3>${esc(n)}</h3><p>${esc(info.desc)}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
+  return `<article class="feature-card${cardImgSrc(n)?" has-img":""}">${cardImg(n,"feature-img")}<div class="feature-top"><span class="feature-tag">${esc(info.tag)}</span>${dietDot(n)}</div><h3>${esc(n)}</h3><p>${esc(info.desc)}</p><div class="feature-prices">${priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("")}</div></article>`;
 }
 const matches=n=>(!vegOnly||!isNonVeg(n))&&(!search||n.toLowerCase().includes(search));
 const optsHtml=(n,full,half)=>priceOpts(n,full,half).map(([label,p,key])=>`<div class="dish-opt">${label?`<span class="portion">${label}</span>`:""}<span class="amt">₹${p}</span>${qtyControl(key)}</div>`).join("");
 function pickCard([n,full,half],badge){
-  return `<article class="pick-card${imgByName[n]?" has-img":""}">${badge?`<span class="pick-badge">${badge}</span>`:""}${dishImg(n,"pick-img")}
+  return `<article class="pick-card${cardImgSrc(n)?" has-img":""}">${badge?`<span class="pick-badge">${badge}</span>`:""}${cardImg(n,"pick-img")}
     <div class="pick-top">${dietDot(n)}<span class="pick-cat">${esc(catByName[n]||"")}</span></div>
     <h4>${esc(n)}</h4>
     <div class="pick-prices">${optsHtml(n,full,half)}</div></article>`;
@@ -74,7 +89,7 @@ function renderMenu(){
     .map(g=>({cat:g.cat,items:(search&&g.cat.toLowerCase().includes(search))?g.items.filter(([n])=>!vegOnly||!isNonVeg(n)):g.items.filter(([n])=>matches(n))}))
     .filter(g=>g.items.length);
   grid.innerHTML=groups.length
-    ?groups.map(g=>`<section class="menu-group"><header class="group-head"><h3>${esc(g.cat)}</h3><span>${g.items.length} ${g.items.length>1?"dishes":"dish"}</span></header>${g.items.map(dishRow).join("")}</section>`).join("")
+    ?groups.map(g=>`<section class="menu-group">${CATEGORY_IMG[g.cat]?`<img class="group-img" src="${CATEGORY_IMG[g.cat]}" alt="${esc(g.cat)}" loading="lazy" decoding="async" width="800" height="600">`:""}<header class="group-head"><h3>${esc(g.cat)}</h3><span>${g.items.length} ${g.items.length>1?"dishes":"dish"}</span></header>${g.items.map(dishRow).join("")}</section>`).join("")
     :`<p class="menu-empty">${search?`No dishes found for “${search.replace(/[<>&]/g,"")}”. Try paneer, biryani or roll.`:"No veg dishes in this category. Turn off “Veg only” to see all."}</p>`;
   renderPicks();   // keeps ADD / quantity buttons in sync on the home picks too
 }
@@ -97,6 +112,19 @@ fmBtn.onclick=()=>fullMenu.hidden?setFullMenu(true,true):collapseFullMenu();
 document.getElementById("hideFullMenuBottom").onclick=collapseFullMenu;
 if(location.hash==="#full-menu")setFullMenu(true,false);
 document.getElementById("heroOrderNow").onclick=e=>{e.preventDefault();setFullMenu(true,true)};
+document.querySelectorAll(".js-order-now").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();setFullMenu(true,true)}));
+// Navbar: underline the link of the section currently on screen
+(()=>{
+  const links=[...document.querySelectorAll("#navLinks a[href^='#']")];
+  const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  const mark=()=>{
+    const y=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hdr"))||120)+40;
+    let cur=sections[0],best=-Infinity;   // the section whose top is closest above the marker line
+    sections.forEach(sec=>{const t=sec.getBoundingClientRect().top;if(t<=y&&t>best){best=t;cur=sec}});
+    links.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+cur.id));
+  };
+  window.addEventListener("scroll",mark,{passive:true});mark();
+})();
 // Bring the results into view when the user is scrolled past them
 function scrollToResults(){
   if(grid.getBoundingClientRect().top<0)grid.scrollIntoView({behavior:"smooth"});
